@@ -1,6 +1,6 @@
 # SOEA Backend: Status and Documentation
 
-**As of:** 27 October 2026
+**As of:** 28 October 2026
 **Covers:** everything done on the backend so far, measured against two documents: the *SOEA Website Project Outline & Backend Handoff Guide* (21 October 2026, "the handoff guide") and the *SOEA Website Content & Developer's Guide* (consolidated revised edition, 14 October 2026, "the content guide").
 
 ## 1. Summary
@@ -276,7 +276,7 @@ Base URL: `/api/v1`. All endpoints are `GET`. Timestamps are ISO 8601 UTC with a
 | `test_stories_api.py` | 36 | Stories, filters, sorting, detail, the whole-API sweep |
 | `test_seed.py` | 3 | Seed is idempotent, clears only demo rows, refuses in production |
 
-- All 179 passed when run during development on Linux (Python 3.12). The first 48 were also confirmed on the Windows development machine (Python 3.13).
+- All 179 tests pass on the Windows development machine (Python 3.13), including in a fresh clone of the GitHub repository installed from the pinned `requirements.txt` (checked on 28 October 2026), and in Linux runs (Python 3.12).
 - The suite uses in-memory SQLite, so it does not prove PostgreSQL behaviour. The partial unique indexes (one anchor theme, one primary theme per program) and the 1000-character limit on story summaries are enforced by PostgreSQL; check them after upgrading.
 - The team API was checked manually against PostgreSQL 18.6 on 22 October 2026 with the demo data.
 
@@ -343,7 +343,7 @@ A tracker spreadsheet (`SOEA_Backend_Alignment_Tracker.xlsx`) records every item
 
 1. Review this document and the API reference with the frontend developer and agree the contract (handoff guide Phase 0), including the decisions in section 13.
 2. Send the content-guide inconsistencies (section 12) to the content owner and get answers on C-02, C-03 and C-10.
-3. Make sure `migrations/` is committed, then share the repository.
+3. The code, including all three migrations, is committed and pushed to GitHub (`square1ecoafrica/SOEANEW`, commit `9d06c23`). Keep the repository private and give the frontend developer access.
 4. Add CI that runs the tests, ideally with a PostgreSQL-backed run.
 5. Build the remaining models: `Partner`, `Resource`, `MediaAsset`, `SocialPost`, `ContactEnquiry` (with phone, partnership category, experience and consent) and `Subscriber`; then `/resources`, `/partners`, the contact endpoint, the subscribe endpoint and rate limiting.
 6. Write an import script that loads the approved content as drafts, so nothing real is published before consent, portraits and approvals are in.
@@ -356,3 +356,4 @@ A tracker spreadsheet (`SOEA_Backend_Alignment_Tracker.xlsx`) records every item
 | 21 Oct 2026 | Reviewed the handoff guide and the old repository. Built the Flask scaffold, the `TeamProfile`, `Story` and `story_authors` models with the public query gate, the team API with schemas and tests, and the seed command. Initialized migrations. |
 | 22 Oct 2026 | Installed PostgreSQL 18.6, created the `soea_dev` database and user, connected Flask through `DATABASE_URL`, regenerated the initial migration on PostgreSQL and verified the team API against it. Wrote the first alignment tracker, status document and README. |
 | 23 to 27 Oct 2026 | Received and reviewed the content guide. Built the theme, location, program, phase, milestone and training-track models, then the story and profile changes with the tagging and team links. Built the themes, locations, programs and stories endpoints and extended the team endpoints and demo data (179 tests). Updated this document, the README and the tracker. |
+| 28 Oct 2026 | Produced a technical and a non-technical progress deck. Committed and pushed the backend to GitHub, confirmed that no committed file contains the database password, and confirmed that a fresh clone installs and passes all 179 tests on Windows. |
