@@ -12,6 +12,19 @@ from .common import PaginationQuerySchema, UTCDateTime, safe_http_url
 from .refs import program_ref, published
 from .urls import STORY_URL_PREFIX, TEAM_URL_PREFIX
 
+def _public_image(asset):
+    """Return only approved public image information."""
+    if asset is None:
+        return None
+
+    url = safe_http_url(asset.public_url)
+    if not url:
+        return None
+
+    return {
+        "url": url,
+        "alt_text": asset.alt_text,
+    }
 
 def _safe_social_links(profile):
     """Never emit javascript:, data: or malformed links."""
@@ -51,7 +64,7 @@ class TeamProfileListSchema(Schema):
     role_title = fields.String()
     short_role = fields.String(allow_none=True)
     role_type = fields.String()
-    image = fields.Constant(None)  # reserved until MediaAsset exists
+    image = fields.Function(lambda profile: _public_image(profile.image))
     url = fields.Function(lambda profile: f"{TEAM_URL_PREFIX}/{profile.slug}")
 
 

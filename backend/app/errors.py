@@ -10,7 +10,7 @@ from flask import g, jsonify
 from marshmallow import ValidationError
 from werkzeug.exceptions import HTTPException
 
-# The guide leaves 400 vs 422 open for validation failures. Change it here once agreed.
+# Validation failures consistently return HTTP 400 Bad Request.
 VALIDATION_STATUS = 400
 
 _CODES = {

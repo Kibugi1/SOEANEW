@@ -4,7 +4,7 @@ APP_ENV: development (default) | testing | production
 
 Variables read from the environment (or backend/.env):
     SECRET_KEY    required in production
-    DATABASE_URL  required in production; optional in development (falls back to SQLite)
+    DATABASE_URL  required in development and production; must use PostgreSQL
     CORS_ORIGINS  comma-separated exact origins; defaults to http://localhost:3000
 """
 import os
@@ -30,13 +30,8 @@ class BaseConfig:
 class DevelopmentConfig(BaseConfig):
     APP_ENV = "development"
     DEBUG = True
-    # Convenience only. Do not treat the SQLite fallback as production-ready, and
-    # avoid PostgreSQL-only column types until PostgreSQL is your dev database.
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-not-a-secret")
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL") or (
-        "sqlite:///" + (BASE_DIR / "dev.db").as_posix()
-    )
-
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
 
 class TestingConfig(BaseConfig):
     APP_ENV = "testing"
@@ -65,8 +60,25 @@ def get_config(name: str | None = None):
     except KeyError:
         raise RuntimeError(f"Unknown APP_ENV {name!r}; expected one of {sorted(CONFIGS)}") from None
 
+    if name == "development":
+        database_url = os.getenv("DATABASE_URL")
+        if not database_url:
+            raise RuntimeError(
+                "DATABASE_URL is required for development. Configure PostgreSQL in backend/.env."
+            )
+        if not database_url.startswith(("postgresql://", "postgresql+")):
+            raise RuntimeError(
+                "Development DATABASE_URL must use PostgreSQL."
+            )
+        config.SQLALCHEMY_DATABASE_URI = database_url
     if name == "production":
         missing = [key for key in ("SECRET_KEY", "DATABASE_URL") if not os.getenv(key)]
         if missing:
             raise RuntimeError(f"Missing required environment variables for production: {missing}")
+
+        database_url = os.getenv("DATABASE_URL")
+        if not database_url.startswith(("postgresql://", "postgresql+")):
+            raise RuntimeError("Production DATABASE_URL must use PostgreSQL.")
+
+        config.SQLALCHEMY_DATABASE_URI = database_url
     return config

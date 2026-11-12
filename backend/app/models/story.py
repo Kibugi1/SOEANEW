@@ -116,6 +116,11 @@ class Story(UUIDPrimaryKeyMixin, TimestampMixin, db.Model):
     outcomes: Mapped[str | None] = mapped_column(Text)  # only if independently substantiated
     video_url: Mapped[str | None] = mapped_column(String(500))  # validate http(s) in the schema
     social_url: Mapped[str | None] = mapped_column(String(500))  # validate http(s) in the schema
+    cover_image_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid,
+        ForeignKey("media_asset.id", ondelete="SET NULL"),
+        nullable=True,
+    )
 
     # Workflow status is separate from published_at (guide requirement).
     status: Mapped[str] = mapped_column(String(20), default="DRAFT")
@@ -124,6 +129,8 @@ class Story(UUIDPrimaryKeyMixin, TimestampMixin, db.Model):
     consent_status: Mapped[str] = mapped_column(String(20), default="unreviewed")
     is_confidential: Mapped[bool] = mapped_column(Boolean, default=False)
     review_notes: Mapped[str | None] = mapped_column(Text)  # internal only; never in public schemas
+
+    cover_image = relationship("MediaAsset")
 
     # WARNING: none of these relationships is filtered by publication rules. Public code
     # must start from app.models.queries, never from story.authors / profile.stories etc.

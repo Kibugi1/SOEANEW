@@ -32,6 +32,9 @@ from .team_profile import PROFILE_STATUSES, ROLE_TYPES, TeamProfile, profile_pro
 from .thematic_area import ThematicArea  # noqa: F401
 from .queries import (  # noqa: F401
     public_child_locations,
+    public_partner_by_slug,
+    public_partners,
+    public_partnership_areas,
     public_profiles_for_program,
     public_programs_for_location,
     public_programs_for_theme,
@@ -55,3 +58,12 @@ from .queries import (  # noqa: F401
     public_themes,
     public_tracks,
 )
+from .media_asset import MediaAsset  # noqa: F401
+from .partner import (
+    Partner,
+    PartnershipArea,
+    partner_areas,
+    program_partners,
+    story_partners,
+    track_partners,
+)  # noqa: F401

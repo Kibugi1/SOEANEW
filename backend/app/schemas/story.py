@@ -10,6 +10,19 @@ from marshmallow import Schema
 
 SORT_CHOICES = ("newest", "oldest")
 
+def _public_image(asset):
+    """Return only approved public image information."""
+    if asset is None:
+        return None
+
+    url = safe_http_url(asset.public_url)
+    if not url:
+        return None
+
+    return {
+        "url": url,
+        "alt_text": asset.alt_text,
+    }
 
 def _first_program(story):
     programs = published(story.programs)
@@ -49,13 +62,13 @@ class StoryListSchema(Schema):
     program = fields.Function(_first_program)
     themes = fields.Function(lambda story: [theme_ref(t) for t in published(story.themes)])
     locations = fields.Function(lambda story: [location_ref(l) for l in published(story.locations)])
-    cover_image = fields.Constant(None)  # reserved until MediaAsset exists
+    cover_image = fields.Function(lambda story: _public_image(story.cover_image))
     url = fields.Function(lambda story: f"{STORY_URL_PREFIX}/{story.slug}")
 
 
 class StoryDetailSchema(StoryListSchema):
-    # `body` is returned exactly as stored. Its format (Markdown vs sanitized HTML) is still
-    # an open decision, so the frontend must not inject it as raw HTML yet.
+    # Story body is stored as Markdown and returned unchanged as a plain string.
+    # The frontend must render Markdown without allowing raw HTML injection.
     body = fields.String()
     next_step = fields.String(allow_none=True)
     lessons = fields.String(allow_none=True)

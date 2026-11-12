@@ -1,3 +1,4 @@
+import uuid
 from sqlalchemy import JSON, CheckConstraint, Column, ForeignKey, Index, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -41,9 +42,14 @@ class TeamProfile(UUIDPrimaryKeyMixin, TimestampMixin, db.Model):
     # private User record). Leave empty until the person and SOEA have approved it.
     public_email: Mapped[str | None] = mapped_column(String(254))
     social_links: Mapped[list] = mapped_column(JSON, default=list)  # validate URLs in the schema
+    image_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid,
+        ForeignKey("media_asset.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     status: Mapped[str] = mapped_column(String(20), default="draft")
     sort_order: Mapped[int] = mapped_column(default=0)
-
+    image = relationship("MediaAsset")
     # WARNING: unfiltered. Public code must use app.models.queries.
     # passive_deletes="all" stops the ORM from silently removing story_authors rows,
     # so the database's RESTRICT rule is what protects a profile that has stories.

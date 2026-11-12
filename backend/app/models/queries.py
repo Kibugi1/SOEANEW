@@ -9,6 +9,7 @@ from uuid import UUID
 from sqlalchemy import or_, select
 
 from .location import Location
+from .partner import Partner, PartnershipArea
 from .program import Milestone, Phase, Program, TrainingTrack, program_locations, program_themes, track_themes
 from .story import (
     PUBLIC_CONSENT_STATUSES,
@@ -216,3 +217,29 @@ def public_tracks_for_theme(theme_id: UUID):
 def public_profiles_for_program(program_id: UUID):
     linked = select(profile_programs.c.profile_id).where(profile_programs.c.program_id == program_id)
     return public_profiles().where(TeamProfile.id.in_(linked))
+
+# ---------------------------------------------------------------------------
+# Public partners and partnership areas.
+# ---------------------------------------------------------------------------
+
+def public_partners():
+    """Only published partners are visible through public endpoints."""
+    return (
+        select(Partner)
+        .where(Partner.publication_status == "published")
+        .order_by(Partner.sort_order, Partner.name, Partner.id)
+    )
+
+
+def public_partner_by_slug(slug: str):
+    """Look up a partner by slug, without exposing unpublished records."""
+    return public_partners().where(Partner.slug == slug)
+
+
+def public_partnership_areas():
+    """Only published partnership areas are visible through public endpoints."""
+    return (
+        select(PartnershipArea)
+        .where(PartnershipArea.publication_status == "published")
+        .order_by(PartnershipArea.sort_order, PartnershipArea.name, PartnershipArea.id)
+    )
