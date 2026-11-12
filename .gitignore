@@ -1,0 +1,7 @@
+# Internal content guides: kept local, not published with the code.
+docs/*.pdf
+docs/*.docx
+
+# Editor/manual backup copies
+*.bak
+*.pre-mui9-fix

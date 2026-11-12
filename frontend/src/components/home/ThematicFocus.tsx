@@ -126,7 +126,7 @@ export default function ThematicFocus() {
         <Stack
           direction={{ xs: "column", md: "row" }}
           spacing={{ xs: 7, md: 10 }}
-          alignItems="flex-start"
+          sx={{ alignItems: "flex-start" }}
         >
           {/* LEFT INTRODUCTION - SPACE ALWAYS RESERVED */}
           <Box
@@ -254,8 +254,8 @@ export default function ThematicFocus() {
                 >
                   <Stack
                     direction="row"
-                    alignItems="center"
                     spacing={2}
+                    sx={{ alignItems: "center" }}
                   >
                     <Typography
                       sx={{
@@ -271,7 +271,7 @@ export default function ThematicFocus() {
                     <Box sx={{ flex: 1 }}>
                       <Typography
                         component={Link}
-                        href={`/thematic-areas/${theme.slug}`}
+                        href={`/our-focus/${theme.slug}`}
                         sx={{
                           display: "block",
                           color: "#FFFFFF",
@@ -296,7 +296,7 @@ export default function ThematicFocus() {
 
                     <Box
                       component={Link}
-                      href={`/thematic-areas/${theme.slug}`}
+                      href={`/our-focus/${theme.slug}`}
                       aria-label={`Explore ${theme.title}`}
                       sx={{
                         color: isActive ? "#D9AF3F" : "#FFFFFF",

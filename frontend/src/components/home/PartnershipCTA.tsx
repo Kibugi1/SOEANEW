@@ -43,8 +43,8 @@ export default function PartnershipCTA() {
         <Grid
           container
           spacing={4}
-          alignItems="center"
           sx={{
+            alignItems: "center",
             py: { xs: 10, md: 16, lg: 20 },
             minHeight: { xs: "650px", md: "85vh" },
           }}
