@@ -278,7 +278,7 @@ export const volunteers: Volunteer[] = [
       "Student learning and digital tasks",
     ],
     programmeIds: [],
-    photo: volunteerPhoto("barbara.jpg", "Barbara Joe"),
+    photo: volunteerPhoto("barbara.jpeg", "Barbara Joe"),
     education: [],
     activities: [],
     email: null,
