@@ -1,15 +1,11 @@
+/*
+ * Browser resets only. All design tokens (colours, fonts, spacing, focus,
+ * selection, reduced motion) live in src/theme/theme.ts and are applied
+ * through MUI's CssBaseline. Do not add colour or font values here.
+ */
+
 :root {
   color-scheme: light;
-  --soea-olive: #83834B;
-  --soea-olive-light: #A8A658;
-  --soea-gold: #D9AF3F;
-  --soea-gold-dark: #BA9327;
-  --soea-earth: #504624;
-  --soea-text: #1A1A1A;
-  --soea-text-muted: #5F5F55;
-  --soea-border: #E5E5DD;
-  --soea-background: #FFFFFF;
-  --soea-label-font: "Space Mono", monospace;
 }
 
 * {
@@ -18,18 +14,10 @@
 
 html {
   min-height: 100%;
-  scroll-behavior: smooth;
-  scroll-padding-top: 90px;
 }
 
 body {
-  min-height: 100vh;
   margin: 0;
-  background: var(--soea-background);
-  color: var(--soea-text);
-  font-family: "DM Sans", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -47,15 +35,4 @@ select {
 img {
   display: block;
   max-width: 100%;
-}
-
-::selection {
-  background: var(--soea-gold);
-  color: var(--soea-text);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
 }

@@ -25,11 +25,11 @@ export default function ProgramsFeature() {
           <Grid
             container
             spacing={{ xs: 5, md: 8 }}
-            alignItems="center"
+            sx={{ alignItems: "center" }}
           >
             {/* PROGRAM INTRODUCTION */}
             <Grid size={{ xs: 12, md: 6 }}>
-              <Stack spacing={3} alignItems="flex-start">
+              <Stack spacing={3} sx={{ alignItems: "flex-start" }}>
                 <Typography
                   sx={{
                     fontFamily: '"Space Mono", monospace',
@@ -173,10 +173,10 @@ export default function ProgramsFeature() {
               {/* IMPLEMENTATION LOCATION */}
               <Stack
                 direction={{ xs: "column", sm: "row" }}
-                justifyContent="space-between"
-                alignItems={{ xs: "flex-start", sm: "center" }}
                 spacing={1}
                 sx={{
+                  justifyContent: "space-between",
+                  alignItems: { xs: "flex-start", sm: "center" },
                   mt: 2,
                   pt: 2,
                   borderTop: "1px solid #E5E5DD",

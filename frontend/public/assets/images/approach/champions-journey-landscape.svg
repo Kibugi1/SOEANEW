@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3000 1100" role="img" aria-labelledby="t d">
+<title id="t">SOEA Champions Journey landscape</title><desc id="d">A continuous illustrated East African landscape with a winding path, hills, acacia trees, homes, fields, a learning hub and market.</desc>
+<defs>
+<linearGradient id="sky" x2="0" y2="1"><stop stop-color="#F7EEDB"/><stop offset="1" stop-color="#E9E5CE"/></linearGradient>
+<linearGradient id="hills" x2="0" y2="1"><stop stop-color="#B7B88A"/><stop offset="1" stop-color="#858B58"/></linearGradient>
+<linearGradient id="road" x2="0" y2="1"><stop stop-color="#E7D8B7"/><stop offset="1" stop-color="#D2BE98"/></linearGradient>
+<pattern id="grain" width="34" height="34" patternUnits="userSpaceOnUse"><circle cx="4" cy="7" r="1.2" fill="#6E7149" opacity=".12"/><circle cx="22" cy="25" r=".9" fill="#6E7149" opacity=".1"/></pattern>
+</defs>
+<rect width="3000" height="1100" fill="url(#sky)"/><circle cx="2450" cy="175" r="82" fill="#E2B95E" opacity=".72"/>
+<path d="M0 480Q250 240 540 420T1100 390T1680 420T2290 350T3000 430V1100H0Z" fill="#D5D3B2"/>
+<path d="M0 570Q300 350 620 540T1250 500T1850 540T2480 470T3000 550V1100H0Z" fill="url(#hills)"/>
+<path d="M0 690Q360 510 720 665T1420 625T2100 660T2740 590T3000 650V1100H0Z" fill="#B99E70"/>
+<g stroke="#6F7847" stroke-width="9" fill="none" opacity=".55"><path d="M0 790Q280 690 550 785M0 830Q280 730 550 825M0 870Q280 770 550 865M2360 800Q2660 700 3000 790M2360 842Q2660 742 3000 832"/></g>
+<g stroke="#625C3F" stroke-width="15" stroke-linecap="round" fill="none"><path d="M760 760Q755 650 780 540M780 600l-80-80M778 615l88-90"/><path d="M1830 710Q1820 600 1845 500M1840 570l-78-75M1842 585l90-85"/><path d="M2700 760Q2690 650 2715 550M2710 620l-85-80M2715 630l90-70"/></g>
+<g fill="#737C4B"><path d="M620 520Q680 445 780 480Q850 430 930 500Q900 550 790 540Q680 570 620 520Z"/><path d="M1690 490Q1760 420 1845 450Q1930 415 2000 485Q1950 535 1840 520Q1750 545 1690 490Z"/><path d="M2550 535Q2630 455 2715 485Q2800 445 2880 520Q2825 570 2710 555Q2625 580 2550 535Z"/></g>
+<g transform="translate(1180 555)" stroke="#6E6247" stroke-width="8"><rect x="0" y="70" width="280" height="170" fill="#E9D8B6"/><path d="M-22 78L140 0 302 78Z" fill="#8E6747"/><rect x="35" y="115" width="70" height="125" fill="#9C7652"/><rect x="145" y="112" width="95" height="72" fill="#A9B58A"/></g>
+<g transform="translate(2380 580)" stroke="#6E6247" stroke-width="7"><path d="M0 80h320v150H0Z" fill="#D9C69E"/><path d="M-18 82L30 0h260l48 82Z" fill="#A7A15E"/><path d="M55 125h190" stroke="#8B754F"/><circle cx="90" cy="145" r="17" fill="#B87C4D"/><circle cx="140" cy="145" r="17" fill="#D8B44F"/><circle cx="190" cy="145" r="17" fill="#71834D"/></g>
+<g stroke="#766E4E" stroke-width="5"><path d="M250 610v-95l62-43 65 43v95Z" fill="#D8C49C"/><path d="M235 515l77-58 82 58" fill="#8C6849"/><path d="M405 630v-75l49-35 51 35v75Z" fill="#E7D8B7"/><path d="M393 558l61-48 62 48" fill="#9A704A"/></g>
+<path d="M-80 990C250 930 390 880 470 800C560 710 520 655 690 655C850 655 920 800 1080 800C1250 800 1270 690 1430 690C1600 690 1640 830 1810 830C1980 830 2020 700 2180 700C2350 700 2420 880 2590 860C2770 840 2880 770 3090 750" fill="none" stroke="#8E805F" stroke-width="118" stroke-linecap="round" opacity=".3"/>
+<path d="M-80 990C250 930 390 880 470 800C560 710 520 655 690 655C850 655 920 800 1080 800C1250 800 1270 690 1430 690C1600 690 1640 830 1810 830C1980 830 2020 700 2180 700C2350 700 2420 880 2590 860C2770 840 2880 770 3090 750" fill="none" stroke="url(#road)" stroke-width="92" stroke-linecap="round"/>
+<path d="M-80 990C250 930 390 880 470 800C560 710 520 655 690 655C850 655 920 800 1080 800C1250 800 1270 690 1430 690C1600 690 1640 830 1810 830C1980 830 2020 700 2180 700C2350 700 2420 880 2590 860C2770 840 2880 770 3090 750" fill="none" stroke="#B8A37B" stroke-width="3" stroke-dasharray="18 24"/>
+<rect width="3000" height="1100" fill="url(#grain)"/></svg>
