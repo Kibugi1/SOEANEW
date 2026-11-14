@@ -42,7 +42,8 @@ def test_production_requires_secret_key(monkeypatch):
 
 
 def test_production_requires_postgresql(monkeypatch):
-    monkeypatch.setenv("SECRET_KEY", "test-secret")
+    monkeypatch.setenv("SECRET_KEY", "test-production-secret-key-at-least-32-chars")
+    monkeypatch.setenv("RATELIMIT_STORAGE_URI", "redis://localhost:6379/0")
     monkeypatch.setenv("DATABASE_URL", "sqlite:///production.db")
 
     with pytest.raises(RuntimeError, match="must use PostgreSQL"):
@@ -51,7 +52,34 @@ def test_production_requires_postgresql(monkeypatch):
 
 def test_production_uses_configured_postgresql(monkeypatch):
     url = "postgresql+psycopg://user:pass@localhost/soea"
-    monkeypatch.setenv("SECRET_KEY", "test-secret")
+    monkeypatch.setenv("SECRET_KEY", "test-production-secret-key-at-least-32-chars")
+    monkeypatch.setenv("RATELIMIT_STORAGE_URI", "redis://localhost:6379/0")
     monkeypatch.setenv("DATABASE_URL", url)
 
     assert get_config("production").SQLALCHEMY_DATABASE_URI == url
+
+
+def test_production_rejects_in_memory_rate_limit_storage(monkeypatch):
+    monkeypatch.setenv("SECRET_KEY", "test-production-secret-key-at-least-32-chars")
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql+psycopg://user:pass@localhost/soea",
+    )
+    monkeypatch.setenv("RATELIMIT_STORAGE_URI", "memory://")
+
+    with pytest.raises(RuntimeError, match="must use Redis"):
+        get_config("production")
+
+def test_production_rejects_short_secret_key(monkeypatch):
+    monkeypatch.setenv("SECRET_KEY", "too-short")
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql+psycopg://user:pass@localhost/soea",
+    )
+    monkeypatch.setenv(
+        "RATELIMIT_STORAGE_URI",
+        "redis://localhost:6379/0",
+    )
+
+    with pytest.raises(RuntimeError, match="at least 32 characters"):
+        get_config("production")

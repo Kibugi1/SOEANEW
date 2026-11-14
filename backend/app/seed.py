@@ -226,3 +226,6 @@ def seed_demo_command(clear: bool) -> None:
 
 def register_cli(app) -> None:
     app.cli.add_command(seed_demo_command)
+
+    from .admin_cli import create_admin_command
+    app.cli.add_command(create_admin_command)

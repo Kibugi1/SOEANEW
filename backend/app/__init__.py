@@ -5,7 +5,7 @@ from flask import Flask, g, request
 
 from .config import get_config
 from .errors import register_error_handlers
-from .extensions import cors, db, migrate
+from .extensions import cors, db, limiter, migrate
 
 # Only accept a client-supplied request ID if it is short and harmless (keeps logs clean).
 _SAFE_REQUEST_ID = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
@@ -16,6 +16,7 @@ def create_app(config_name: str | None = None) -> Flask:
     app.config.from_object(get_config(config_name))
 
     db.init_app(app)
+    limiter.init_app(app)
     migrate.init_app(app, db)
     cors.init_app(
         app,

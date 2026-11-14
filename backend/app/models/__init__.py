@@ -67,3 +67,15 @@ from .partner import (
     story_partners,
     track_partners,
 )  # noqa: F401
+
+from .resource import Resource, resource_stories  # noqa: F401
+
+from .social_post import SocialPost  # noqa: F401
+
+from .forms import ContactEnquiry, Subscriber  # noqa: F401
+
+from .user import User, UserRole  # noqa: F401
+
+from .audit_event import AuditEvent  # noqa: F401
+
+from .newsletter_campaign import NewsletterCampaign, NewsletterDelivery  # noqa: F401

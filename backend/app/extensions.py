@@ -2,6 +2,8 @@
 import sqlite3
 
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData, event
@@ -30,3 +32,7 @@ def _enforce_sqlite_foreign_keys(dbapi_connection, connection_record):
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.close()
+
+
+# Public form abuse protection. Configure shared Redis storage in production.
+limiter = Limiter(key_func=get_remote_address)

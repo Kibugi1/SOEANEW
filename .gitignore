@@ -5,3 +5,9 @@ docs/*.docx
 # Editor/manual backup copies
 *.bak
 *.pre-mui9-fix
+
+# Local development conversation exports and recovery backups
+/backend/docs/work-notes/
+/BACKEND_STATUS.review-backup.md
+/backend-recovery-backup.zip
+/tash show --stat stash@{0}
