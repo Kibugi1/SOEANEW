@@ -9,6 +9,9 @@ Variables read from the environment (or backend/.env):
     CORS_ORIGINS  comma-separated exact origins; defaults to http://localhost:3000
 """
 import os
+import ipaddress
+import re
+from urllib.parse import urlsplit
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -21,6 +24,44 @@ def _split_csv(value: str) -> list[str]:
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
+def _valid_cors_hostname(hostname: str) -> bool:
+    """Return whether a hostname is a valid DNS name or IP address."""
+    if not hostname or '*' in hostname or len(hostname) > 253:
+        return False
+
+    try:
+        ipaddress.ip_address(hostname)
+        return True
+    except ValueError:
+        pass
+
+    labels = hostname.split('.')
+    if len(labels) < 2:
+        return False
+
+    return all(
+        re.fullmatch(r'[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?', label)
+        is not None
+        for label in labels
+    )
+
+
+def _get_smtp_port() -> int:
+    raw_port = os.getenv("SMTP_PORT", "587")
+    try:
+        port = int(raw_port)
+    except (TypeError, ValueError):
+        raise RuntimeError(
+            "SMTP_PORT must be an integer between 1 and 65535."
+        ) from None
+
+    if not 1 <= port <= 65535:
+        raise RuntimeError(
+            "SMTP_PORT must be an integer between 1 and 65535."
+        )
+    return port
+
+
 class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CORS_ORIGINS = _split_csv(os.getenv("CORS_ORIGINS", "http://localhost:3000"))
@@ -30,7 +71,7 @@ class BaseConfig:
     NEWSLETTER_TOKEN_MAX_AGE = 60 * 60 * 24
     ADMIN_ACCESS_TOKEN_MAX_AGE = 900
     SMTP_HOST = os.getenv("SMTP_HOST")
-    SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+    SMTP_PORT = 587
     SMTP_USERNAME = os.getenv("SMTP_USERNAME")
     SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
     SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL")
@@ -68,9 +109,14 @@ CONFIGS = {
 def get_config(name: str | None = None):
     name = (name or os.getenv("APP_ENV", "development")).lower()
     try:
-        config = CONFIGS[name]
+        config_class = CONFIGS[name]
     except KeyError:
         raise RuntimeError(f"Unknown APP_ENV {name!r}; expected one of {sorted(CONFIGS)}") from None
+
+    # Give every call its own class so environment-specific values
+    # cannot mutate configuration returned by earlier calls.
+    config = type(f"{name.title()}ConfigInstance", (config_class,), {})
+    config.SMTP_PORT = _get_smtp_port()
 
     if name == "development":
         database_url = os.getenv("DATABASE_URL")
@@ -97,6 +143,45 @@ def get_config(name: str | None = None):
             )
 
         config.SECRET_KEY = secret_key
+
+        cors_origins = _split_csv(os.getenv("CORS_ORIGINS", ""))
+        if not cors_origins:
+            raise RuntimeError(
+                "CORS_ORIGINS is required in production and must contain "
+                "at least one HTTPS origin."
+            )
+
+        for origin in cors_origins:
+            try:
+                parsed_origin = urlsplit(origin)
+                parsed_origin.port
+            except ValueError:
+                raise RuntimeError(
+                    f"Invalid production CORS origin: {origin!r}."
+                ) from None
+
+            hostname = (parsed_origin.hostname or "").lower()
+
+            if (
+                parsed_origin.scheme != "https"
+                or not parsed_origin.netloc
+                or not hostname
+                or not _valid_cors_hostname(hostname)
+                or hostname == "localhost"
+                or hostname.endswith(".localhost")
+                or hostname in ("127.0.0.1", "::1", "0.0.0.0")
+                or parsed_origin.username is not None
+                or parsed_origin.password is not None
+                or parsed_origin.path
+                or parsed_origin.query
+                or parsed_origin.fragment
+            ):
+                raise RuntimeError(
+                    "Production CORS_ORIGINS must contain valid HTTPS "
+                    f"origins without localhost or paths: {origin!r}."
+                )
+
+        config.CORS_ORIGINS = cors_origins
 
         storage_uri = os.getenv("RATELIMIT_STORAGE_URI", "")
         if not storage_uri.startswith(("redis://", "rediss://")):

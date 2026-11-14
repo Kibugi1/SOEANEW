@@ -143,3 +143,39 @@ def test_create_admin_rejects_short_password(app, cli_runner):
         ).first()
 
         assert user is None
+
+
+def test_create_admin_rejects_invalid_email(cli_runner):
+    result = cli_runner.invoke(
+        args=["create-admin"],
+        input="not-an-email\n",
+    )
+
+    assert result.exit_code != 0
+    assert "Enter a valid email address." in result.output
+
+
+def test_create_admin_rejects_password_over_256_characters(
+    app, cli_runner
+):
+    long_password = "A" * 257
+
+    result = cli_runner.invoke(
+        args=["create-admin"],
+        input=(
+            "longpassword@example.com\n"
+            "admin\n"
+            f"{long_password}\n"
+            f"{long_password}\n"
+        ),
+    )
+
+    assert result.exit_code != 0
+    assert "between 12 and 256 characters" in result.output
+
+    with app.app_context():
+        user = db.session.query(User).filter_by(
+            email="longpassword@example.com"
+        ).first()
+
+        assert user is None

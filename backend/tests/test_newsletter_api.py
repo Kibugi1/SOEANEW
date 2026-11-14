@@ -501,3 +501,59 @@ def test_newsletter_token_endpoints_reject_malformed_or_oversized_tokens(
 
     assert response.status_code == 400
     assert "error" in response.get_json()
+
+
+
+@pytest.mark.parametrize(
+    ("endpoint", "error_code"),
+    [
+        (
+            "/api/v1/newsletter-subscriptions/confirm",
+            "INVALID_CONFIRMATION_TOKEN",
+        ),
+        (
+            "/api/v1/newsletter-subscriptions/unsubscribe",
+            "INVALID_UNSUBSCRIBE_TOKEN",
+        ),
+    ],
+)
+def test_invalid_newsletter_token_errors_include_request_id(
+    newsletter_client, endpoint, error_code
+):
+    request_id = "newsletter-error-test-123"
+
+    response = newsletter_client.post(
+        endpoint,
+        json={"token": "invalid-token"},
+        headers={"X-Request-ID": request_id},
+    )
+
+    assert response.status_code == 400
+    assert response.headers["X-Request-ID"] == request_id
+    assert response.get_json()["error"]["code"] == error_code
+    assert response.get_json()["error"]["request_id"] == request_id
+
+
+def test_newsletter_email_failure_error_includes_request_id(
+    newsletter_client, monkeypatch
+):
+    from app.api.v1 import forms
+
+    def fail_delivery(email, token):
+        raise RuntimeError("SMTP unavailable")
+
+    monkeypatch.setattr(
+        forms,
+        "send_newsletter_confirmation",
+        fail_delivery,
+    )
+
+    request_id = "newsletter-email-error-123"
+    response = subscribe(
+        newsletter_client
+    )
+
+    assert response.status_code == 503
+    assert response.headers["X-Request-ID"]
+    assert response.get_json()["error"]["code"] == "EMAIL_DELIVERY_FAILED"
+    assert response.get_json()["error"]["request_id"] == response.headers["X-Request-ID"]

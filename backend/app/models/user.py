@@ -1,4 +1,4 @@
-﻿from datetime import datetime
+from datetime import datetime
 
 from sqlalchemy import Boolean, CheckConstraint, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -60,6 +60,9 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, db.Model):
         )
 
     def check_password(self, password: str) -> bool:
+        if not isinstance(password, str):
+            return False
+
         try:
             return check_password_hash(self.password_hash, password)
         except (ValueError, TypeError):

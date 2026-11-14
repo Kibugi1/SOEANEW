@@ -170,3 +170,85 @@ def test_successful_login_is_audited(app, auth_client):
         ).one()
         assert event.target_type == "user"
         assert event.details["role"] == UserRole.EDITOR
+
+def test_expired_access_token_is_rejected(app, auth_client):
+    with app.app_context():
+        create_user()
+
+    token = login(auth_client).get_json()["data"]["access_token"]
+    app.config["ADMIN_ACCESS_TOKEN_MAX_AGE"] = -1
+
+    response = auth_client.get(
+        "/api/v1/auth/me",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 401
+
+
+def test_tampered_access_token_is_rejected(app, auth_client):
+    with app.app_context():
+        create_user()
+
+    token = login(auth_client).get_json()["data"]["access_token"]
+    parts = token.split(".")
+    parts[0] = ("A" if parts[0][0] != "A" else "B") + parts[0][1:]
+    tampered_token = ".".join(parts)
+
+    response = auth_client.get(
+        "/api/v1/auth/me",
+        headers={"Authorization": f"Bearer {tampered_token}"},
+    )
+
+    assert response.status_code == 401
+
+
+def test_malformed_access_token_is_rejected(auth_client):
+    response = auth_client.get(
+        "/api/v1/auth/me",
+        headers={"Authorization": "Bearer not-a-valid-token"},
+    )
+
+    assert response.status_code == 401
+
+
+def test_access_token_with_invalid_claims_is_rejected(app, auth_client):
+    from itsdangerous import URLSafeTimedSerializer
+
+    with app.app_context():
+        create_user()
+
+        serializer = URLSafeTimedSerializer(
+            app.config["SECRET_KEY"],
+            salt="soea-admin-access-v1",
+        )
+        invalid_token = serializer.dumps({
+            "user_id": "00000000-0000-0000-0000-000000000001",
+            "token_version": True,
+        })
+
+    response = auth_client.get(
+        "/api/v1/auth/me",
+        headers={"Authorization": f"Bearer {invalid_token}"},
+    )
+
+    assert response.status_code == 401
+
+
+
+def test_invalid_login_error_includes_request_id(app, auth_client):
+    request_id = "auth-error-test-123"
+
+    response = auth_client.post(
+        "/api/v1/auth/login",
+        json={
+            "email": "unknown@example.com",
+            "password": "WrongPassword123!",
+        },
+        headers={"X-Request-ID": request_id},
+    )
+
+    assert response.status_code == 401
+    assert response.headers["X-Request-ID"] == request_id
+    assert response.get_json()["error"]["code"] == "INVALID_CREDENTIALS"
+    assert response.get_json()["error"]["request_id"] == request_id

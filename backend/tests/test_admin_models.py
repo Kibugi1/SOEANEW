@@ -75,3 +75,11 @@ def test_audit_event_actor_foreign_key():
         fk.target_fullname == "user_account.id"
         for fk in column.foreign_keys
     )
+
+
+@pytest.mark.parametrize("password", [None, 123, [], {}, ""])
+def test_user_check_password_rejects_invalid_input(password):
+    user = User(email="admin@example.com")
+    user.set_password("StrongPassword123!")
+
+    assert user.check_password(password) is False

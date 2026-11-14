@@ -1,11 +1,10 @@
-﻿"""Authentication and role checks for administrative API routes."""
+"""Authentication and role checks for administrative API routes."""
 
 from functools import wraps
 from uuid import UUID
 
 from flask import abort, g, request
 from itsdangerous import BadData, SignatureExpired
-from sqlalchemy.exc import SQLAlchemyError
 
 from app.extensions import db
 from app.models import User
@@ -33,8 +32,6 @@ def admin_required(view):
             user = db.session.get(User, user_id)
         except (BadData, SignatureExpired, ValueError, TypeError, KeyError):
             abort(401, description="The access token is invalid or expired.")
-        except SQLAlchemyError:
-            raise
 
         if (
             user is None

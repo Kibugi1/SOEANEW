@@ -8,6 +8,7 @@ from sqlalchemy import select
 
 from app.api.helpers import item_response
 from app.extensions import db, limiter
+from app.errors import error_response
 from app.models import ContactEnquiry, Subscriber
 from app.schemas.forms import (
     ContactEnquiryCreateSchema,
@@ -88,11 +89,11 @@ def create_newsletter_subscription():
         current_app.logger.exception(
             "Newsletter confirmation email delivery failed."
         )
-        return {
-            "error": {
-                "message": "We could not send a confirmation email. Please try again later."
-            }
-        }, 503
+        return error_response(
+            503,
+            "EMAIL_DELIVERY_FAILED",
+            "We could not send a confirmation email. Please try again later.",
+        )
 
     return item_response({
         "message": "If the address can be subscribed, a confirmation email will be sent."
@@ -106,13 +107,21 @@ def confirm_newsletter_subscription():
     token = payload.get("token") if isinstance(payload, dict) else None
 
     if not isinstance(token, str) or not token or len(token) > MAX_NEWSLETTER_TOKEN_LENGTH:
-        return {"error": {"message": "A valid confirmation token is required."}}, 400
+        return error_response(
+            400,
+            "INVALID_CONFIRMATION_TOKEN",
+            "A valid confirmation token is required.",
+        )
 
 
     try:
         claims = verify_newsletter_token_claims(token, "confirm")
     except (BadData, SignatureExpired, ValueError):
-        return {"error": {"message": "The confirmation link is invalid or expired."}}, 400
+        return error_response(
+            400,
+            "INVALID_CONFIRMATION_TOKEN",
+            "The confirmation link is invalid or expired.",
+        )
 
     email = claims["email"].strip().lower()
     subscriber = db.session.execute(
@@ -120,14 +129,18 @@ def confirm_newsletter_subscription():
     ).scalar_one_or_none()
 
     if subscriber is None or claims.get("nonce") != subscriber.token_nonce:
-        return {"error": {"message": "The confirmation link is invalid or expired."}}, 400
+        return error_response(
+            400,
+            "INVALID_CONFIRMATION_TOKEN",
+            "The confirmation link is invalid or expired.",
+        )
 
     if subscriber.status == "unsubscribed":
-        return {
-            "error": {
-                "message": "This subscription has been cancelled. Please subscribe again."
-            }
-        }, 409
+        return error_response(
+            409,
+            "SUBSCRIPTION_CANCELLED",
+            "This subscription has been cancelled. Please subscribe again.",
+        )
 
     if subscriber.status == "pending":
         subscriber.status = "active"
@@ -145,13 +158,21 @@ def unsubscribe_newsletter():
     token = payload.get("token") if isinstance(payload, dict) else None
 
     if not isinstance(token, str) or not token or len(token) > MAX_NEWSLETTER_TOKEN_LENGTH:
-        return {"error": {"message": "A valid unsubscribe token is required."}}, 400
+        return error_response(
+            400,
+            "INVALID_UNSUBSCRIBE_TOKEN",
+            "A valid unsubscribe token is required.",
+        )
 
 
     try:
         claims = verify_newsletter_token_claims(token, "unsubscribe")
     except (BadData, SignatureExpired, ValueError):
-        return {"error": {"message": "The unsubscribe link is invalid or expired."}}, 400
+        return error_response(
+            400,
+            "INVALID_UNSUBSCRIBE_TOKEN",
+            "The unsubscribe link is invalid or expired.",
+        )
 
     email = claims["email"].strip().lower()
     subscriber = db.session.execute(
@@ -159,7 +180,11 @@ def unsubscribe_newsletter():
     ).scalar_one_or_none()
 
     if subscriber is None or claims.get("nonce") != subscriber.token_nonce:
-        return {"error": {"message": "The unsubscribe link is invalid or expired."}}, 400
+        return error_response(
+            400,
+            "INVALID_UNSUBSCRIBE_TOKEN",
+            "The unsubscribe link is invalid or expired.",
+        )
 
     if subscriber.status != "unsubscribed":
         subscriber.status = "unsubscribed"

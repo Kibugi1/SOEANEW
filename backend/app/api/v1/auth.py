@@ -8,6 +8,7 @@ from sqlalchemy import select
 from app.api.decorators import admin_required
 from app.api.helpers import item_response
 from app.extensions import db, limiter
+from app.errors import error_response
 from app.models import AuditEvent, User
 from app.schemas.admin_auth import AdminLoginSchema
 from app.services.admin_auth import generate_admin_access_token
@@ -26,12 +27,11 @@ def admin_login():
     ).scalar_one_or_none()
 
     if user is None or not user.check_password(data["password"]) or not user.is_active:
-        return {
-            "error": {
-                "code": "INVALID_CREDENTIALS",
-                "message": "The email or password is incorrect.",
-            }
-        }, 401
+        return error_response(
+            401,
+            "INVALID_CREDENTIALS",
+            "The email or password is incorrect.",
+        )
 
     user.last_login_at = datetime.now(timezone.utc)
 
