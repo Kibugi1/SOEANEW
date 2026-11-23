@@ -255,9 +255,22 @@ Request:
       "token": "<unsubscribe-token>"
     }
 
-Invalid or expired tokens return an error response.
+Invalid or expired tokens return an error response. Confirmation links expire after
+24 hours. Unsubscribe links do not expire: they are signed and tied to the subscriber's
+nonce, so subscribing again cancels every older link.
 
-Both endpoints are rate-limited to 10 requests per hour.
+Both endpoints are rate-limited to 10 requests per hour. The website pages that call them
+are `/confirm-subscription?token=…` (confirms on opening) and `/unsubscribe?token=…` (the
+person presses a button, so email link scanners cannot unsubscribe anyone).
+
+### One-click unsubscribe (mail apps)
+
+`POST /api/v1/newsletter-subscriptions/one-click?token=<unsubscribe-token>` with the form
+body `List-Unsubscribe=One-Click` (RFC 8058). Campaign emails carry
+`List-Unsubscribe: <API_PUBLIC_URL/newsletter-subscriptions/one-click?token=…>` and
+`List-Unsubscribe-Post: List-Unsubscribe=One-Click`, so Gmail's own Unsubscribe button
+calls this directly. GET is refused (405). Rate limit 120 per minute. Without
+`API_PUBLIC_URL` the header falls back to the website unsubscribe page.
 
 ## 7. Administrative newsletter campaigns
 

@@ -209,19 +209,19 @@ def confirm_newsletter_subscription():
     })
 
 
-@api_v1.post("/newsletter-subscriptions/unsubscribe")
-@limiter.limit("10 per hour")
-def unsubscribe_newsletter():
-    payload = request.get_json(silent=True) or {}
-    token = payload.get("token") if isinstance(payload, dict) else None
+def _unsubscribe(token):
+    """Cancel the subscription a signed unsubscribe token belongs to.
 
+    Shared by the website's unsubscribe page and the one-click endpoint mail apps
+    call. Unsubscribing twice is fine; an unknown, tampered or superseded token is
+    refused without saying whether the address exists.
+    """
     if not isinstance(token, str) or not token or len(token) > MAX_NEWSLETTER_TOKEN_LENGTH:
         return error_response(
             400,
             "INVALID_UNSUBSCRIBE_TOKEN",
             "A valid unsubscribe token is required.",
         )
-
 
     try:
         claims = verify_newsletter_token_claims(token, "unsubscribe")
@@ -251,3 +251,32 @@ def unsubscribe_newsletter():
     return item_response({
         "message": "Your newsletter subscription has been cancelled."
     })
+
+
+@api_v1.post("/newsletter-subscriptions/unsubscribe")
+@limiter.limit("10 per hour")
+def unsubscribe_newsletter():
+    """Unsubscribe from the website page: JSON body {"token": "..."}."""
+    payload = request.get_json(silent=True) or {}
+    token = payload.get("token") if isinstance(payload, dict) else None
+    return _unsubscribe(token)
+
+
+@api_v1.post("/newsletter-subscriptions/one-click")
+@limiter.limit("120 per minute")
+def one_click_unsubscribe_newsletter():
+    """One-click unsubscribe (RFC 8058), called by Gmail and other mail apps.
+
+    The newsletter's List-Unsubscribe header points here with the token in the query
+    string, and List-Unsubscribe-Post tells the mail app to POST the form body
+    "List-Unsubscribe=One-Click". Only POST is accepted, so link scanners that open
+    URLs (GET) cannot unsubscribe anyone. The limit is generous because mail providers
+    send these from a small number of shared addresses.
+    """
+    if request.form.get("List-Unsubscribe") != "One-Click":
+        return error_response(
+            400,
+            "INVALID_ONE_CLICK_REQUEST",
+            'Expected the form body "List-Unsubscribe=One-Click".',
+        )
+    return _unsubscribe(request.args.get("token"))

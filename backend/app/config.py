@@ -68,7 +68,8 @@ class BaseConfig:
     SECRET_KEY = os.getenv("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     NEWSLETTER_CONSENT_TEXT_VERSION = os.getenv("NEWSLETTER_CONSENT_TEXT_VERSION", "v1")
-    NEWSLETTER_TOKEN_MAX_AGE = 60 * 60 * 24
+    NEWSLETTER_TOKEN_MAX_AGE = 60 * 60 * 24  # confirmation links
+    NEWSLETTER_UNSUBSCRIBE_TOKEN_MAX_AGE = None  # unsubscribe links never expire
     ADMIN_ACCESS_TOKEN_MAX_AGE = 900
     # Longest a signed-in session can be kept alive through /auth/refresh.
     ADMIN_SESSION_MAX_AGE = 12 * 60 * 60
@@ -79,6 +80,9 @@ class BaseConfig:
     SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL")
     NEWSLETTER_CONFIRMATION_URL = os.getenv("NEWSLETTER_CONFIRMATION_URL")
     NEWSLETTER_UNSUBSCRIBE_URL = os.getenv("NEWSLETTER_UNSUBSCRIBE_URL")
+    # Public address of this API, for the one-click unsubscribe link that Gmail and
+    # other mail apps POST to (RFC 8058). Must be https in production.
+    API_PUBLIC_URL = os.getenv("API_PUBLIC_URL", "http://localhost:5000/api/v1")
     RATELIMIT_STORAGE_URI = os.getenv("RATELIMIT_STORAGE_URI", "memory://")
 
     # Where website messages are announced by email. Every message is stored in the
