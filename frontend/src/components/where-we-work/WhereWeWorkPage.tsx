@@ -1,5 +1,8 @@
 import Image from "next/image";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
+import GeoJourney from "@/components/where-we-work/GeoJourney";
+import { focusCounties } from "@/data/counties";
+import { getJourneyMapData } from "@/lib/geo/journeyMap";
 import Link from "next/link";
 import ArrowOutwardRounded from "@mui/icons-material/ArrowOutwardRounded";
 import PlaceOutlined from "@mui/icons-material/PlaceOutlined";
@@ -141,6 +144,9 @@ export default function WhereWeWorkPage() {
           </Box>
         </Container>
       </Box>
+
+      {/* Interactive map: World → Africa → Kenya → Counties (feedback 19 Nov 2026, §10) */}
+      <GeoJourney map={getJourneyMapData()} counties={focusCounties} />
 
       {/* Nairobi coordination hub */}
       <Box
