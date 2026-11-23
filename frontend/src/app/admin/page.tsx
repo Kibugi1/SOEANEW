@@ -94,7 +94,7 @@ export default function AdminHome() {
               {data.stories_awaiting_review === 1
                 ? "1 story or event is waiting for your review."
                 : `${data.stories_awaiting_review} stories and events are waiting for your review.`}{" "}
-              Reviewing opens with the Stories screen, coming next.
+              <Link href="/admin/stories">Open the review queue</Link>
             </Alert>
           )}
 

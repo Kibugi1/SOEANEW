@@ -348,3 +348,45 @@ def test_dashboard_counts_stories_for_author_and_admin(story_client):
     assert other["my_stories"]["DRAFT"] == 1
     admin = story_client.get("/api/v1/admin/dashboard", headers=auth(t["rozalia"])).get_json()["data"]
     assert admin["stories_awaiting_review"] == 1
+
+
+def test_options_for_pickers_are_available_to_authors(story_client):
+    t = tokens(story_client)
+    db.session.add(Program(slug="jeet", title="JEET Champions", short_name="JEET", summary="s",
+                           publication_status="draft"))
+    db.session.commit()
+    data = story_client.get("/api/v1/admin/options", headers=auth(t["stephanie"])).get_json()["data"]
+
+    assert {p["slug"] for p in data["programs"]} == {"ceci", "jeet"}  # drafts included
+    assert "stephanie-ndiritu" in {p["slug"] for p in data["profiles"]}
+    assert [p["slug"] for p in data["places"]] == ["dandora"]
+    assert set(data) == {"profiles", "programs", "themes", "places"}
+    assert story_client.get("/api/v1/admin/options").status_code == 401
+
+
+def test_dashboard_editor_payload_shapes(story_client):
+    """The exact shapes StoryEditor.tsx sends: empty optional text as null, empty
+    summary/body omitted, event fields null on stories, approve with no schedule."""
+    t = tokens(story_client)
+    first_save = {
+        "story_type": "story", "title": "Quick draft", "activity_date": None, "event_end_date": None,
+        "venue": None, "organiser": None, "event_role": None, "lessons": None, "next_step": None,
+        "outcomes": None, "video_url": None, "social_url": None, "consent_status": "unreviewed",
+        "team": [], "program_slugs": [], "phase_refs": [], "theme_slugs": [], "location_slugs": [],
+        "gallery": [], "cover_image_id": None,
+    }
+    created = story_client.post(BASE, json=first_save, headers=auth(t["stephanie"]))
+    assert created.status_code == 201, created.get_json()
+    story_id = created.get_json()["data"]["id"]
+
+    later_save = {**first_save, "summary": "Short summary.", "body": "Full text.",
+                  "consent_status": "not_required", "team": [{"slug": "stephanie-ndiritu", "role": "lead"}]}
+    assert story_client.patch(f"{BASE}/{story_id}", json=later_save, headers=auth(t["stephanie"])).status_code == 200
+    assert story_client.post(f"{BASE}/{story_id}/submit", json={}, headers=auth(t["stephanie"])).status_code == 200
+
+    approved = story_client.post(f"{BASE}/{story_id}/approve", json={"publish_at": None, "notes": None},
+                                 headers=auth(t["rozalia"]))
+    assert approved.status_code == 200, approved.get_json()
+
+    manager_save = {**later_save, "is_confidential": False, "author_slugs": ["stephanie-ndiritu"]}
+    assert story_client.patch(f"{BASE}/{story_id}", json=manager_save, headers=auth(t["rozalia"])).status_code == 200
