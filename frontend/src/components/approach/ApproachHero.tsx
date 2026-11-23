@@ -1,4 +1,4 @@
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
+import Image from "next/image";
 import LinkButton from "@/components/ui/LinkButton";
 import {
   Box,
@@ -144,11 +144,14 @@ export default function ApproachHero() {
               overflow: "hidden",
             }}
           >
-            {/* Feedback 19 Nov 2026, §7: replace the posed/standing photo. */}
-            <ImagePlaceholder
-              needed="Rozalia Wangui Karanja engaging in a Mathare listening circle (SOEA logo visible), or addressing the Dandora community. Prefer the photo where people are interacting and listening."
-              source="Mathare baseline/community meetings and Dandora community engagement folders"
-              sx={{ bottom: "28%" }}
+            {/* Same photo as step 02 "Assess Together" in the Champions Journey. */}
+            <Image
+              src="/assets/images/championsjourney/assesstogether.jpeg"
+              alt="Community members and SOEA staff sit in a circle with worksheets, discussing priorities together."
+              fill
+              priority
+              sizes="(max-width: 900px) 100vw, 50vw"
+              style={{ objectFit: "cover", objectPosition: "center" }}
             />
 
             <Box
