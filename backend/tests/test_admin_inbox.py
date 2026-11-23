@@ -271,6 +271,23 @@ def test_cannot_assign_to_author_or_unknown_account(filled):
     ).status_code == 400
 
 
+def test_editors_can_list_who_to_assign_to(inbox_client):
+    make_user("left@example.org", UserRole.EDITOR, active=False)
+    token = token_for(inbox_client, "editor@example.org")
+
+    response = inbox_client.get("/api/v1/admin/enquiries/assignees", headers=auth(token))
+
+    assert response.status_code == 200
+    emails = {person["email"] for person in response.get_json()["data"]}
+    assert emails == {"rozalia@example.org", "editor@example.org"}  # no authors, no inactive
+
+
+def test_authors_cannot_list_assignees(inbox_client):
+    token = token_for(inbox_client, "author@example.org")
+    response = inbox_client.get("/api/v1/admin/enquiries/assignees", headers=auth(token))
+    assert response.status_code == 403
+
+
 def test_only_admin_can_erase_a_message(filled):
     enquiry = db.session.query(ContactEnquiry).first()
     editor = token_for(filled, "editor@example.org")

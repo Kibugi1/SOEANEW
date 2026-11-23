@@ -1,4 +1,4 @@
-import type { Answers, Inbox, SubmissionKind } from "@/lib/submissions";
+import type { Answers, SubmissionKind } from "@/lib/submissions";
 
 export type { Answers };
 
@@ -30,6 +30,8 @@ export interface JourneyField {
   options?: JourneyOption[];
   autoComplete?: string;
   maxLength?: number;
+  /** Shortest accepted answer, matching the API (e.g. messages need 10 characters). */
+  minLength?: number;
 }
 
 export interface JourneyStep {
@@ -53,7 +55,6 @@ export interface JourneyConfig {
   /** e.g. "Partnership journey" — used for the progress tracker heading. */
   name: string;
   steps: JourneyStep[];
-  inbox: (answers: Answers) => Inbox;
   review: {
     title: Dynamic;
     body?: Dynamic;

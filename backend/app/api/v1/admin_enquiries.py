@@ -12,6 +12,7 @@ from app.errors import error_response
 from app.extensions import db
 from app.models import AuditEvent, ContactEnquiry, User, UserRole
 from app.schemas.admin import (
+    AssigneeSchema,
     EnquiryDetailSchema,
     EnquiryListQuerySchema,
     EnquirySummarySchema,
@@ -66,6 +67,22 @@ def list_enquiries():
     statement = statement.order_by(ContactEnquiry.created_at.desc(), ContactEnquiry.id)
     pagination = paginate(statement, args)
     return collection_response(EnquirySummarySchema(many=True).dump(pagination.items), pagination)
+
+
+@api_v1.get("/admin/enquiries/assignees")
+@roles_required(*UserRole.CONTENT_MANAGERS)
+def list_enquiry_assignees():
+    """Accounts a message can be assigned to: active admins and editors.
+
+    Editors cannot list accounts (that is admin-only), but they can assign messages,
+    so the inbox needs its own short list. Names and emails only.
+    """
+    users = db.session.scalars(
+        select(User)
+        .where(User.is_active.is_(True), User.role.in_(UserRole.CONTENT_MANAGERS))
+        .order_by(User.full_name, User.email)
+    ).all()
+    return item_response(AssigneeSchema(many=True).dump(users))
 
 
 @api_v1.get("/admin/enquiries/<enquiry_id>")

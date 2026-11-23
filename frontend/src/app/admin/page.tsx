@@ -25,9 +25,22 @@ const INBOX_LABELS: Record<string, string> = {
   info: "General",
 };
 
-function Stat({ value, label, hint }: { value: number | string; label: string; hint?: string }) {
+function Stat({ value, label, hint, href }: { value: number | string; label: string; hint?: string; href?: string }) {
+  const linkSx = href
+    ? {
+        display: "block",
+        textDecoration: "none",
+        color: "inherit",
+        "&:hover": { borderColor: "primary.main" },
+        "&:focus-visible": { outline: "3px solid", outlineColor: "primary.main" },
+      }
+    : {};
   return (
-    <Paper variant="outlined" sx={{ p: 2.5, height: "100%" }}>
+    <Paper
+      variant="outlined"
+      {...(href ? { component: Link, href } : {})}
+      sx={{ p: 2.5, height: "100%", ...linkSx }}
+    >
       <Typography component="p" variant="h3" sx={{ lineHeight: 1 }}>
         {value}
       </Typography>
@@ -98,6 +111,15 @@ export default function AdminHome() {
             </Alert>
           )}
 
+          {(data.enquiries?.by_status.new ?? 0) > 0 && (
+            <Alert severity="info" sx={{ mt: 3 }}>
+              {data.enquiries!.by_status.new === 1
+                ? "1 new website message has not been picked up yet."
+                : `${data.enquiries!.by_status.new} new website messages have not been picked up yet.`}{" "}
+              <Link href="/admin/inbox">Open the inbox</Link>
+            </Alert>
+          )}
+
           {data.role === "author" && !user?.team_profile && (
             <Alert severity="info" sx={{ mt: 3 }}>
               Your account is not linked to a team profile yet, so your stories will not show on a profile
@@ -119,11 +141,21 @@ export default function AdminHome() {
               <Grid container spacing={2}>
                 {Object.keys(INBOX_LABELS).map((inbox) => (
                   <Grid key={inbox} size={cell}>
-                    <Stat value={data.enquiries!.open_by_inbox[inbox] ?? 0} label={INBOX_LABELS[inbox]} hint="New or being reviewed" />
+                    <Stat
+                      value={data.enquiries!.open_by_inbox[inbox] ?? 0}
+                      label={INBOX_LABELS[inbox]}
+                      hint="New or being reviewed"
+                      href={`/admin/inbox?inbox=${inbox}`}
+                    />
                   </Grid>
                 ))}
                 <Grid size={cell}>
-                  <Stat value={data.enquiries.by_status.total} label="All messages" hint={`${data.enquiries.by_status.closed ?? 0} closed`} />
+                  <Stat
+                    value={data.enquiries.by_status.total}
+                    label="All messages"
+                    hint={`${data.enquiries.by_status.closed ?? 0} closed`}
+                    href="/admin/inbox?status=all"
+                  />
                 </Grid>
               </Grid>
             </Section>

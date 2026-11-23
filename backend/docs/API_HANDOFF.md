@@ -331,6 +331,7 @@ deactivate themselves (HTTP 409). Accounts are deactivated, never deleted.
 | Method | Endpoint | Purpose |
 |---|---|---|
 | GET | `/admin/enquiries` | List messages, newest first |
+| GET | `/admin/enquiries/assignees` | Active admins and editors a message can be assigned to (`id`, `full_name`, `email`) |
 | GET | `/admin/enquiries/<id>` | Full message, including `details`, `internal_notes` |
 | PATCH | `/admin/enquiries/<id>` | Change `status`, `internal_notes`, `assigned_to_user_id` |
 | DELETE | `/admin/enquiries/<id>` | Permanently erase (admin only; e.g. a data-removal request) |

@@ -12,7 +12,7 @@ export interface AdminNavItem {
 
 export const ADMIN_NAV: AdminNavItem[] = [
   { href: "/admin", label: "Home", roles: ["admin", "editor", "author"], ready: true },
-  { href: "/admin/inbox", label: "Inbox", roles: ["admin", "editor"], ready: false },
+  { href: "/admin/inbox", label: "Inbox", roles: ["admin", "editor"], ready: true },
   { href: "/admin/stories", label: "Stories & events", authorLabel: "My stories", roles: ["admin", "editor", "author"], ready: true },
   { href: "/admin/programs", label: "Programs", roles: ["admin", "editor"], ready: false },
   { href: "/admin/partners", label: "Partners", roles: ["admin", "editor"], ready: false },
