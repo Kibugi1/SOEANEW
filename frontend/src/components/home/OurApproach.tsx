@@ -21,35 +21,30 @@ interface Step {
     /** Null while the requested photo is still being chosen (see `photo`). */
     image: string | null;
     alt: string;
+    /** CSS object-position, to keep the speaker in frame in the narrow cards. */
+    position?: string;
     photo?: PhotoNeeded;
 }
 
 // Titles and descriptions: SOEA website feedback, 19 Nov 2026, §7 (the same six
 // stages as Our Approach). Photo order: same document, §2.1.
-const SUPER_DAY = "Waste Pickers Super Day photo folder (10 October 2026)";
 
 const steps: Step[] = [
     {
         number: "01",
         title: "Understand the challenge",
         description: "Listen to lived experience, community priorities and aspirations.",
-        image: null,
-        alt: "Nawire at the Waste Pickers Super Day, wearing SOEA branding",
-        photo: {
-            needed: "Nawire at the Waste Pickers Super Day: short hair, green dress/coat, visible SOEA-logo branding. The new opening image.",
-            source: SUPER_DAY,
-        },
+        image: "/assets/images/approach/nawire-speaking.jpg",
+        alt: "Nawire, in a green coat and an SOEA high-visibility vest, speaking into a microphone at a community event",
+        position: "50% 35%",
     },
     {
         number: "02",
         title: "Assess together",
         description: "Gather baseline evidence, analyze opportunities and barriers, and validate findings with communities.",
-        image: null,
-        alt: "Nahshon Omollo facilitating a community conversation at Light Academy Hall, Dandora",
-        photo: {
-            needed: "Nahshon Omollo speaking at the second Dandora waste pickers community conversation, Light Academy Hall (alternative: Wairimu Maina at the same event). Show facilitation and participation.",
-            source: "Dandora second community engagement photos",
-        },
+        image: "/assets/images/approach/nahshon-speaking.jpg",
+        alt: "Nahshon Omollo, in an SOEA shirt, facilitating a conversation with community members seated around a table",
+        position: "72% 40%",
     },
     {
         number: "03",
@@ -63,12 +58,9 @@ const steps: Step[] = [
         number: "04",
         title: "Build capabilities",
         description: "Deliver practical skills, legal rights advocacy, safety, social skills and enterprise learning.",
-        image: null,
-        alt: "Rozalia Wangui Karanja at the Waste Pickers Super Day, SOEA logo on her clothing",
-        photo: {
-            needed: "Rozalia Wangui Karanja at the Waste Pickers Super Day, facing the camera with the SOEA logo visible on her clothing (replaces the side-on photo).",
-            source: SUPER_DAY,
-        },
+        image: "/assets/images/approach/rozalia-speaking-mazingira-day.jpg",
+        alt: "Rozalia Wangui Karanja, wearing an SOEA shirt, speaking into a microphone to children and community members",
+        position: "35% 40%",
     },
     {
         number: "05",
@@ -82,12 +74,9 @@ const steps: Step[] = [
         number: "06",
         title: "Measure, document, learn, replicate, scale & adopt",
         description: "Follow up, assess change, communicate evidence, adapt what works and support lasting community or institutional ownership.",
-        image: null,
-        alt: "SOEA team member speaking at the Waste Pickers Super Day",
-        photo: {
-            needed: "A different, clearly SOEA-branded action photo from the Waste Pickers Super Day: Nahshon Omollo, Brian Kibugi or Wairimu Maina speaking. Not the photo used in step 05.",
-            source: SUPER_DAY,
-        },
+        image: "/assets/images/approach/brian-speaking.jpg",
+        alt: "Brian Kibugi, in an SOEA high-visibility vest, speaking into a microphone at a community event",
+        position: "35% 35%",
     },
 ];
 
@@ -252,7 +241,7 @@ export default function OurApproach() {
                                     priority={index === 0}
                                     style={{
                                         objectFit: "cover",
-                                        objectPosition: "center",
+                                        objectPosition: step.position ?? "center",
                                         filter: isActive
                                             ? "brightness(0.88) saturate(1)"
                                             : "brightness(0.58) saturate(0.65) blur(1.2px)",
