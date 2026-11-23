@@ -230,3 +230,15 @@ def test_delete_rules(partner_client, editor, admin):
 def test_partnership_area_options(partner_client, editor):
     data = partner_client.get("/api/v1/admin/partnership-areas", headers=auth(editor)).get_json()["data"]
     assert [a["slug"] for a in data] == ["curriculum", "ppe-supply"]
+
+
+def test_seed_partnership_areas_adds_missing_once(partner_client):
+    from app.content_seed import PARTNERSHIP_AREAS, seed_partnership_areas
+
+    existing = {a.slug for a in db.session.query(PartnershipArea).all()}
+    notes = seed_partnership_areas()
+    slugs = {a.slug for a in db.session.query(PartnershipArea).all()}
+
+    assert {slug for slug, _, _ in PARTNERSHIP_AREAS} <= slugs
+    assert len(notes) == len({slug for slug, _, _ in PARTNERSHIP_AREAS} - existing)
+    assert seed_partnership_areas() == ["All partnership areas already exist; nothing changed."]

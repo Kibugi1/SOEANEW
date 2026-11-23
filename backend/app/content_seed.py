@@ -142,6 +142,57 @@ def seed_jeet_command():
         click.echo(note)
 
 
+# --- Partnership areas ----------------------------------------------------------------
+
+# The seven areas offered on the website's Partner With Us journey
+# (frontend/src/components/journey/journeys.ts, partnershipInterests). Same slugs, so the
+# areas on a partner match the `interests` stored on partnership enquiries.
+PARTNERSHIP_AREAS = (
+    ("training", "Training & Technical Expertise",
+     "Curriculum development, TVET certification, circular-economy skills, facilitation and mentorship."),
+    ("legal", "Legal Awareness & Community Rights",
+     "Paralegal training, legal literacy, environmental rights and access to justice."),
+    ("health-safety", "Health, Safety & Wellbeing",
+     "Occupational health and safety, safety marshal training, first aid and protective equipment."),
+    ("finance-enterprise", "Finance & Enterprise Development",
+     "Financial literacy, savings, access to suitable finance, entrepreneurship and investment readiness."),
+    ("markets", "Markets & Livelihoods",
+     "Product development, employment pathways, buyer relationships and enterprise partnerships."),
+    ("research", "Research, Innovation & Evidence",
+     "Program assessments, digital tools, monitoring, community research and learning."),
+    ("resource-mobilization", "Resource Mobilization",
+     "Financial, technical, equipment and in-kind support for program development and implementation."),
+)
+
+
+def seed_partnership_areas() -> list[str]:
+    """Create any missing partnership areas. Existing ones are left exactly as they are.
+
+    They are published straight away: the same wording is already public on the
+    Partner With Us journey.
+    """
+    from app.models import PartnershipArea
+
+    existing = set(db.session.scalars(select(PartnershipArea.slug)).all())
+    added = []
+    for order, (slug, name, summary) in enumerate(PARTNERSHIP_AREAS, start=1):
+        if slug in existing:
+            continue
+        db.session.add(PartnershipArea(slug=slug, name=name, summary=summary,
+                                       sort_order=order * 10, publication_status="published"))
+        added.append(name)
+    db.session.commit()
+    return [f"Added: {name}" for name in added] or ["All partnership areas already exist; nothing changed."]
+
+
+@click.command("seed-partnership-areas")
+@with_appcontext
+def seed_partnership_areas_command():
+    """Load the seven partnership areas used on the Partner With Us journey."""
+    for note in seed_partnership_areas():
+        click.echo(note)
+
+
 # --- Past events (March to October 2026) ------------------------------------------------
 
 def import_past_events() -> tuple[int, list[str]]:

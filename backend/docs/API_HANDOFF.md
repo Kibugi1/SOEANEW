@@ -417,6 +417,10 @@ The public program endpoints now also return `parent` (list and detail) and, on 
 `lead` (only while that profile is published), `contact_email`, `cta`
 (`{"label", "url", "pending"}`; `url` is `null` while pending) and `sub_programs`.
 
+**Loading partnership areas:** `flask --app run.py seed-partnership-areas` adds the seven areas used on
+the Partner With Us journey (same slugs as enquiry `interests`), published. It only adds
+missing areas and never changes existing ones.
+
 **Loading JEET Champions:** `flask --app run.py seed-jeet` creates JEET Champions from Chika
 Atueyi's 20 November 2026 brief as a draft, linked to CECI, Chika's profile, the Renewable
 Energy & Clean Cooking theme and Nairobi, Kajiado and Isiolo where those exist. It reports
