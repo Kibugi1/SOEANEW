@@ -17,14 +17,27 @@ import {
   Typography,
 } from "@mui/material";
 
-const scenes = [
+type Scene = {
+  number: string;
+  title: string;
+  caption: string;
+  description: string;
+  image: string;
+  /** Describes the photo itself, for screen readers. */
+  alt: string;
+  /** CSS object-position, to keep people in frame when the photo is cropped. */
+  imagePosition?: string;
+};
+
+const scenes: Scene[] = [
   {
     number: "01",
     title: "Understand the Challenge",
     caption: "Listen to the community",
     description:
       "We listen to communities, conduct assessments and document local experiences. Every meaningful solution begins with understanding the people and places involved.",
-    image: "/assets/images/approach/01-understand.svg",
+    image: "/assets/images/championsjourney/understandthechallenge.jpg",
+    alt: "A waste picker weighs a sack of collected materials on a hanging scale while community members and SOEA team members record the reading.",
   },
   {
     number: "02",
@@ -32,7 +45,8 @@ const scenes = [
     caption: "Identify priorities together",
     description:
       "We identify needs, existing skills, opportunities, barriers and possible solutions alongside the communities we work with.",
-    image: "/assets/images/approach/02-assess.svg",
+    image: "/assets/images/championsjourney/assesstogether.jpeg",
+    alt: "Community members and SOEA staff sit in a circle with worksheets, discussing priorities together.",
   },
   {
     number: "03",
@@ -40,7 +54,9 @@ const scenes = [
     caption: "Develop practical solutions",
     description:
       "Communities, technical experts and partners work together to develop practical solutions and learning pathways that respond to local realities.",
-    image: "/assets/images/approach/03-codesign.svg",
+    image: "/assets/images/championsjourney/codesign.jpeg",
+    alt: "SOEA team members and partners stand together in front of SOEA and Mathare banners after a co-design session.",
+    imagePosition: "center 40%",
   },
   {
     number: "04",
@@ -48,7 +64,9 @@ const scenes = [
     caption: "Learn, practise and grow",
     description:
       "We connect participants to training, mentorship, technical skills, legal awareness, financial literacy and occupational health and safety.",
-    image: "/assets/images/approach/04-capabilities.svg",
+    image: "/assets/images/championsjourney/buildcapabilities.jpeg",
+    alt: "A facilitator speaks to participants during a training session in a community hall, beside an SOEA banner.",
+    imagePosition: "center 35%",
   },
   {
     number: "05",
@@ -56,7 +74,8 @@ const scenes = [
     caption: "Turn skills into opportunity",
     description:
       "We facilitate access to practical experience, markets, financial services, enterprise pathways and partnerships.",
-    image: "/assets/images/approach/05-opportunity.svg",
+    image: "/assets/images/championsjourney/connecttoopportunity.jpg",
+    alt: "A sack of sorted plastics and other recyclable materials collected by waste pickers.",
   },
   {
     number: "06",
@@ -64,7 +83,8 @@ const scenes = [
     caption: "Learn, measure and improve",
     description:
       "We track progress, document learning and assess outcomes, including through three-month and six-month follow-up where applicable.",
-    image: "/assets/images/approach/06-follow-through.svg",
+    image: "/assets/images/championsjourney/followthrough.jpg",
+    alt: "SOEA team members review survey forms with community members during a field follow-up.",
   },
 ];
 
@@ -372,10 +392,10 @@ export default function ChampionsJourney() {
                   >
                     <Image
                       src={active.image}
-                      alt={`Illustration: ${active.title}`}
+                      alt={active.alt}
                       fill
                       sizes="(max-width: 1200px) 50vw, 680px"
-                      style={{ objectFit: "cover" }}
+                      style={{ objectFit: "cover", objectPosition: active.imagePosition ?? "center" }}
                       priority
                     />
                   </Box>
@@ -480,7 +500,7 @@ export default function ChampionsJourney() {
           </Stack>
 
           <Stack spacing={5}>
-            {scenes.map((scene, index) => (
+            {scenes.map((scene) => (
               <Box
                 key={scene.number}
                 sx={{
@@ -521,10 +541,10 @@ export default function ChampionsJourney() {
                 >
                   <Image
                     src={scene.image}
-                    alt={`Illustration: ${scene.title}`}
+                    alt={scene.alt}
                     fill
                     sizes="(max-width: 600px) 90vw, 500px"
-                    style={{ objectFit: "cover" }}
+                    style={{ objectFit: "cover", objectPosition: scene.imagePosition ?? "center" }}
                   />
                 </Box>
 
