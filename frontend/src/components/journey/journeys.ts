@@ -302,7 +302,7 @@ export const subscribeTopics: JourneyOption[] = [
   { value: "research", label: "Research & evidence" },
   { value: "partnerships", label: "Partnerships" },
   { value: "learning", label: "Learning resources" },
-  { value: "taarifa-eco", label: "TAARiFA Eco", description: "Be first to hear when the prototype is introduced." },
+  { value: "taarifa-eco", label: "Taarifa Eco", description: "Be first to hear when the prototype is introduced." },
 ];
 
 export const subscribeJourney: JourneyConfig = {

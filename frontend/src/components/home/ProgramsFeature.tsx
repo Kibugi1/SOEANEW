@@ -69,19 +69,70 @@ export default function ProgramsFeature() {
                     lineHeight: 1.9,
                   }}
                 >
-                  Explore the Community Eco-Circular Initiative (CECI),
-                  SOEA's cross-thematic initiative connecting environmental
-                  learning, practical skills and livelihood opportunities.
+                  Through the Community Environmental Champions Initiative
+                  (CECI), SOEA co-designs practical learning and livelihood
+                  pathways with communities, turning local knowledge into
+                  skills, safer working conditions, economic opportunities and
+                  environmental leadership. Its first flagship project, WP-LIFT,
+                  focuses on waste pickers and five practical pathways: organic
+                  waste composting, plastic recycling and upcycling, glass
+                  recovery and cutting, e-waste management, and textile recovery
+                  and upcycling. These pathways are complemented by legal rights
+                  advocacy, occupational health and safety, financial literacy,
+                  entrepreneurship, mentorship and market connections, helping
+                  communities build the capabilities and opportunities to
+                  sustain transformational change.
                 </Typography>
 
-                <LinkButton
-                  href="/programs/ceci"
-                  variant="contained"
-                  endIcon={<ArrowOutwardRounded />}
-                  sx={{ mt: 1 }}
+                {/* Program → first flagship project (feedback 19 Nov 2026, §2.3) */}
+                <Box
+                  sx={{
+                    borderLeft: "3px solid #83834B",
+                    pl: 2.5,
+                    py: 0.5,
+                    maxWidth: 600,
+                  }}
                 >
-                  Discover CECI
-                </LinkButton>
+                  <Typography
+                    sx={{
+                      fontFamily: '"Space Mono", monospace',
+                      fontSize: "0.65rem",
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      color: "#83834B",
+                    }}
+                  >
+                    Flagship Program
+                  </Typography>
+                  <Typography sx={{ fontWeight: 700, color: "#1A1A1A", mt: 0.5 }}>
+                    Community Environmental Champions Initiative (CECI)
+                  </Typography>
+                  <Typography sx={{ color: "#5F5F55", fontSize: 14, lineHeight: 1.8, mt: 1 }}>
+                    First flagship project:{" "}
+                    <Box component="strong" sx={{ color: "#504624" }}>
+                      WP-LIFT — Waste Pickers&rsquo; Livelihood Improvement for
+                      Transformation
+                    </Box>
+                    , underway in Dandora and Mathare, Nairobi County.
+                  </Typography>
+                </Box>
+
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ mt: 1 }}>
+                  <LinkButton
+                    href="/programs/ceci"
+                    variant="contained"
+                    endIcon={<ArrowOutwardRounded />}
+                  >
+                    Discover CECI
+                  </LinkButton>
+                  <LinkButton
+                    href="/programs/ceci#wp-lift"
+                    variant="outlined"
+                    endIcon={<ArrowOutwardRounded />}
+                  >
+                    The WP-LIFT project
+                  </LinkButton>
+                </Stack>
               </Stack>
             </Grid>
 
@@ -98,7 +149,7 @@ export default function ProgramsFeature() {
               >
                 <Image
                   src="/assets/images/community/ceciplanning.webp"
-                  alt="Community Eco-Circular Initiative planning session"
+                  alt="Community Environmental Champions Initiative planning session"
                   fill
                   priority={false}
                   sizes="(max-width: 900px) 100vw, 50vw"
@@ -139,7 +190,7 @@ export default function ProgramsFeature() {
                       mb: 1.5,
                     }}
                   >
-                    Featured initiative
+                    Flagship program
                   </Typography>
 
                   <Typography
@@ -152,7 +203,7 @@ export default function ProgramsFeature() {
                       maxWidth: 450,
                     }}
                   >
-                    Community Eco-Circular Initiative
+                    Community Environmental Champions Initiative
                   </Typography>
 
                   <Typography
@@ -164,8 +215,8 @@ export default function ProgramsFeature() {
                       color: "rgba(255,255,255,0.82)",
                     }}
                   >
-                    Connecting circular-economy learning with practical
-                    pathways around waste, recovery, skills and livelihoods.
+                    Home of WP-LIFT, our first flagship project, co-designed
+                    with waste pickers in Dandora and Mathare.
                   </Typography>
                 </Box>
               </Box>
@@ -191,7 +242,7 @@ export default function ProgramsFeature() {
                     color: "#83834B",
                   }}
                 >
-                  Initial implementation focus
+                  WP-LIFT underway in
                 </Typography>
 
                 <Typography

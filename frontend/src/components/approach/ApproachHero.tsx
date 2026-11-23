@@ -1,4 +1,4 @@
-import Image from "next/image";
+import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import LinkButton from "@/components/ui/LinkButton";
 import {
   Box,
@@ -144,16 +144,11 @@ export default function ApproachHero() {
               overflow: "hidden",
             }}
           >
-            <Image
-              src="/assets/images/community/rozaliaconferencepresenting.webp"
-              alt="Community engagement and knowledge sharing during SOEA activities"
-              fill
-              priority
-              sizes="(max-width: 900px) 100vw, 50vw"
-              style={{
-                objectFit: "cover",
-                objectPosition: "center",
-              }}
+            {/* Feedback 19 Nov 2026, §7: replace the posed/standing photo. */}
+            <ImagePlaceholder
+              needed="Rozalia Wangui Karanja engaging in a Mathare listening circle (SOEA logo visible), or addressing the Dandora community. Prefer the photo where people are interacting and listening."
+              source="Mathare baseline/community meetings and Dandora community engagement folders"
+              sx={{ bottom: "28%" }}
             />
 
             <Box

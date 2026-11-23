@@ -19,7 +19,7 @@ const pillars = [
     },
     {
         number: "02",
-        title: "Eco-Tech Innovation Hubs",
+        title: "EcoTech Innovation Hubs",
         description:
             "Exploring how technology, skills and local innovation can help communities respond to environmental challenges.",
         href: "/innovation",

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import Link from "next/link";
 import ArrowOutwardRounded from "@mui/icons-material/ArrowOutwardRounded";
 import PlaceOutlined from "@mui/icons-material/PlaceOutlined";
@@ -163,13 +164,17 @@ export default function WhereWeWorkPage() {
                 bgcolor: "#E8E8DC",
               }}
             >
-              <Image
-                src={content.coordinationHub.image}
-                alt="SOEA community programme planning in Nairobi"
-                fill
-                sizes="(max-width: 900px) 100vw, 50vw"
-                style={{ objectFit: "cover" }}
-              />
+              {content.coordinationHub.image ? (
+                <Image
+                  src={content.coordinationHub.image}
+                  alt="Nairobi skyline"
+                  fill
+                  sizes="(max-width: 900px) 100vw, 50vw"
+                  style={{ objectFit: "cover" }}
+                />
+              ) : (
+                <ImagePlaceholder {...content.coordinationHub.photo} sx={{ bottom: "30%" }} />
+              )}
               <Box
                 sx={{
                   position: "absolute",
@@ -240,9 +245,9 @@ export default function WhereWeWorkPage() {
                   mt: 1,
                 }}
               >
-                <Eyebrow>Confirmed community programme locations</Eyebrow>
+                <Eyebrow>Confirmed community program locations</Eyebrow>
                 <Typography sx={{ color: muted, mt: 1, lineHeight: 1.8 }}>
-                  CECI's initial community engagement and programme activities
+                  CECI&rsquo;s initial community engagement and program activities
                   are centred in Dandora and Mathare.
                 </Typography>
               </Box>
@@ -269,7 +274,7 @@ export default function WhereWeWorkPage() {
               Working alongside communities in Dandora and Mathare.
             </Typography>
             <Typography sx={{ color: muted, lineHeight: 1.9 }}>
-              These locations are central to CECI's first community pathway,
+              These locations are central to WP-LIFT, CECI&rsquo;s first flagship project,
               which begins with waste pickers and practical circular economy
               learning.
             </Typography>
@@ -292,13 +297,17 @@ export default function WhereWeWorkPage() {
                     bgcolor: "#F3F3EC",
                   }}
                 >
-                  <Image
-                    src={location.image}
-                    alt={`Community engagement in ${location.name}`}
-                    fill
-                    sizes="(max-width: 900px) 100vw, 50vw"
-                    style={{ objectFit: "cover" }}
-                  />
+                  {location.image ? (
+                    <Image
+                      src={location.image}
+                      alt={`Community engagement in ${location.name}`}
+                      fill
+                      sizes="(max-width: 900px) 100vw, 50vw"
+                      style={{ objectFit: "cover" }}
+                    />
+                  ) : (
+                    location.photo && <ImagePlaceholder {...location.photo} sx={{ bottom: "35%" }} />
+                  )}
                   <Box
                     sx={{
                       position: "absolute",
@@ -381,7 +390,7 @@ export default function WhereWeWorkPage() {
                   color: ink,
                 }}
               >
-                Beyond the urban context.
+                Beyond Nairobi County.
               </Typography>
               <Typography sx={{ color: muted, lineHeight: 1.9 }}>
                 {content.geographicFocusDescription}

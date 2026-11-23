@@ -47,15 +47,30 @@ export default function AnchorArea() {
                 textTransform: "uppercase",
               }}
             >
-              Our anchor
+              Our overarching thematic focus
+            </Typography>
+
+            {/* Display graphic (feedback §4.1); the formal name stays the heading below. */}
+            <Typography
+              aria-hidden="true"
+              sx={{
+                fontFamily: "Cormorant Garamond, serif",
+                fontSize: { xs: "3.4rem", md: "5.6rem" },
+                lineHeight: 1,
+                fontStyle: "italic",
+                color: "#D9AF3F",
+                mb: 1,
+              }}
+            >
+              {focusAnchor.displayTitle}
             </Typography>
 
             <Typography
               component="h2"
               sx={{
                 fontFamily: "Cormorant Garamond, serif",
-                fontSize: { xs: "2.8rem", md: "4.5rem" },
-                lineHeight: 1,
+                fontSize: { xs: "2rem", md: "3rem" },
+                lineHeight: 1.05,
                 fontWeight: 600,
                 mb: 3,
               }}

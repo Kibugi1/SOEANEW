@@ -25,8 +25,8 @@ export default function SharedCommitment() {
             mx: "auto",
             textAlign: "center",
             fontFamily: "Cormorant Garamond, serif",
-            fontSize: { xs: "2.1rem", md: "3.4rem" },
-            lineHeight: 1.2,
+            fontSize: { xs: "1.45rem", md: "2.1rem" },
+            lineHeight: 1.35,
             color: "#1A1A1A",
           }}
         >

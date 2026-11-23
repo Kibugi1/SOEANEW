@@ -190,7 +190,7 @@ export default async function FocusAreaPage({
                     mb: 3,
                   }}
                 >
-                  CECI LEARNING TRACK
+                  {(area.learningTrackLabel ?? "CECI learning track").toUpperCase()}
                 </Typography>
                 <Typography
                   sx={{
@@ -213,7 +213,7 @@ export default async function FocusAreaPage({
                     mb: 3,
                   }}
                 >
-                  RELATED EVIDENCE
+                  WHERE THE WORK STANDS
                 </Typography>
                 <Typography
                   sx={{
@@ -224,6 +224,30 @@ export default async function FocusAreaPage({
                 >
                   {area.evidence}
                 </Typography>
+                {area.related && area.related.length > 0 && (
+                  <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
+                    {area.related.map((link) => (
+                      <Box
+                        key={link.href}
+                        component="a"
+                        href={link.href}
+                        sx={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 0.75,
+                          color: "#504624",
+                          fontWeight: 700,
+                          fontSize: "0.9rem",
+                          textDecoration: "none",
+                          "&:hover": { color: "#83834B" },
+                        }}
+                      >
+                        {link.label}
+                        <ArrowOutwardRoundedIcon sx={{ fontSize: 16 }} />
+                      </Box>
+                    ))}
+                  </Box>
+                )}
               </Box>
             </Box>
           </Container>

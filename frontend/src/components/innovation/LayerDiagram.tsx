@@ -12,14 +12,14 @@ type LayerDiagramProps = {
   communityName: string;
 };
 
-/** Three connected TAARiFA Eco layers, revealed top to bottom. */
+/** The connected Taarifa Eco layers, revealed top to bottom. */
 export default function LayerDiagram({ layers, communityName }: LayerDiagramProps) {
   const reduceMotion = useReducedMotion();
 
   return (
     <Box
       role="figure"
-      aria-label={`TAARiFA Eco's three connected layers, adapted for ${communityName}`}
+      aria-label={`Taarifa Eco's ${layers.length} connected layers, adapted for ${communityName}`}
       sx={{
         p: { xs: 3, md: 4 },
         bgcolor: "background.inverse",

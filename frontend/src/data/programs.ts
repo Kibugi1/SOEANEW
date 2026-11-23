@@ -33,9 +33,10 @@ export const programmes: Programme[] = [
     title: "Community Environmental Champions Initiative",
     shortName: "CECI",
     summary:
-      "Developing community champions for practical climate action.",
+      "SOEA’s flagship community-led training and development program.",
+    // Feedback 19 Nov 2026, §8.2 (opening) and §1 (program → projects).
     description:
-      "Our cross-thematic training and development programme is beginning with waste pickers in Dandora and Mathare. The first CECI pathway focuses on circular economy skills, community leadership, safety, legal awareness, finance and livelihoods.",
+      "SOEA’s flagship community-led training and development program, connecting practical skills, rights, environmental action and livelihood opportunities across our six cross-cutting thematic areas. Its first flagship project, WP-LIFT (Waste Pickers’ Livelihood Improvement for Transformation), is underway with waste pickers in Dandora and Mathare; JEET Champions is a developing project in renewable energy and electric mobility.",
     coverImage: "/assets/images/community/ceciplanning.webp",
     status: "in_development",
     visibility: "published",
@@ -46,7 +47,7 @@ export const programmes: Programme[] = [
       "Circular Economy & Waste Management",
       "Gender-Responsive Climate Resilience",
     ],
-    currentPhase: "Phase 1: Curriculum Development & Partnerships",
+    currentPhase: "WP-LIFT Phase 1: Curriculum co-design & partnerships (Oct 2026 – Mar 2027)",
     featured: true,
     objectives: [
       "Develop practical circular economy skills.",

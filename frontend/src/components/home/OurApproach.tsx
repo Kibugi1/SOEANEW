@@ -10,57 +10,84 @@ import {
 } from "@mui/material";
 import ArrowOutwardRounded from "@mui/icons-material/ArrowOutwardRounded";
 import LinkButton from "@/components/ui/LinkButton";
+import ImagePlaceholder, { type PhotoNeeded } from "@/components/ui/ImagePlaceholder";
 
 const MotionBox = motion(Box);
 
-const steps = [
+interface Step {
+    number: string;
+    title: string;
+    description: string;
+    /** Null while the requested photo is still being chosen (see `photo`). */
+    image: string | null;
+    alt: string;
+    photo?: PhotoNeeded;
+}
+
+// Titles and descriptions: SOEA website feedback, 19 Nov 2026, §7 (the same six
+// stages as Our Approach). Photo order: same document, §2.1.
+const SUPER_DAY = "Waste Pickers Super Day photo folder (10 October 2026)";
+
+const steps: Step[] = [
     {
         number: "01",
-        title: "Listen & understand",
-        description:
-            "Start with the lived experiences, priorities and aspirations of communities.",
-        image: "/assets/images/community/womanmicspeaking.jpg",
-        alt: "A woman speaking during a community engagement session",
+        title: "Understand the challenge",
+        description: "Listen to lived experience, community priorities and aspirations.",
+        image: null,
+        alt: "Nawire at the Waste Pickers Super Day, wearing SOEA branding",
+        photo: {
+            needed: "Nawire at the Waste Pickers Super Day: short hair, green dress/coat, visible SOEA-logo branding. The new opening image.",
+            source: SUPER_DAY,
+        },
     },
     {
         number: "02",
         title: "Assess together",
-        description:
-            "Understand local challenges, resources and opportunities collaboratively.",
-        image: "/assets/images/community/datassessmentdandora.JPEG",
-        alt: "Community data assessment in Dandora",
+        description: "Gather baseline evidence, analyze opportunities and barriers, and validate findings with communities.",
+        image: null,
+        alt: "Nahshon Omollo facilitating a community conversation at Light Academy Hall, Dandora",
+        photo: {
+            needed: "Nahshon Omollo speaking at the second Dandora waste pickers community conversation, Light Academy Hall (alternative: Wairimu Maina at the same event). Show facilitation and participation.",
+            source: "Dandora second community engagement photos",
+        },
     },
     {
         number: "03",
         title: "Co-design",
-        description:
-            "Shape practical responses with the people who will bring them to life.",
-        image: "/assets/images/community/VSORep.jpg",
-        alt: "Community and development representatives working together",
+        description: "Develop practical solutions, curriculum content and pathways with communities, technical partners and institutions.",
+        // Moved here from step 01, as requested.
+        image: "/assets/images/community/womanmicspeaking.jpg",
+        alt: "A woman speaking during a community engagement session",
     },
     {
         number: "04",
-        title: "Train & equip",
-        description:
-            "Build the skills, knowledge and capabilities needed to take action.",
-        image: "/assets/images/community/RozaliaSpeaking.jpg",
-        alt: "Rozalia speaking during a training session",
+        title: "Build capabilities",
+        description: "Deliver practical skills, legal rights advocacy, safety, social skills and enterprise learning.",
+        image: null,
+        alt: "Rozalia Wangui Karanja at the Waste Pickers Super Day, SOEA logo on her clothing",
+        photo: {
+            needed: "Rozalia Wangui Karanja at the Waste Pickers Super Day, facing the camera with the SOEA logo visible on her clothing (replaces the side-on photo).",
+            source: SUPER_DAY,
+        },
     },
     {
         number: "05",
         title: "Connect to opportunity",
-        description:
-            "Create pathways to partnerships, markets and sustainable livelihoods.",
-        image: "/assets/images/community/stephceciplanningaugust.JPEG",
-        alt: "Planning and collaboration session",
+        description: "Support demonstration, market linkages, financial services and sustainable livelihoods.",
+        // Moved here from step 06, as requested.
+        image: "/assets/images/community/stephaniesite.jpg",
+        alt: "SOEA team member during a project site visit",
     },
     {
         number: "06",
-        title: "Follow through",
-        description:
-            "Learn from implementation, track progress and strengthen what works.",
-        image: "/assets/images/community/stephaniesite.jpg",
-        alt: "SOEA team member during a project site visit",
+        title: "Measure, document, learn, replicate, scale & adopt",
+        description: "Follow up, assess change, communicate evidence, adapt what works and support lasting community or institutional ownership.",
+        image: null,
+        alt: "SOEA team member speaking at the Waste Pickers Super Day",
+        photo: {
+            needed: "A different, clearly SOEA-branded action photo from the Waste Pickers Super Day: Nahshon Omollo, Brian Kibugi or Wairimu Maina speaking. Not the photo used in step 05.",
+            source: SUPER_DAY,
+        },
     },
 ];
 
@@ -215,7 +242,8 @@ export default function OurApproach() {
                                     },
                                 }}
                             >
-                                {/* Background photograph */}
+                                {/* Background photograph, or the photo still to be chosen */}
+                                {step.image ? (
                                 <Image
                                     src={step.image}
                                     alt={step.alt}
@@ -233,6 +261,13 @@ export default function OurApproach() {
                                             "filter 650ms ease, transform 900ms cubic-bezier(0.22, 1, 0.36, 1)",
                                     }}
                                 />
+                                ) : (
+                                    <ImagePlaceholder
+                                        {...step.photo!}
+                                        compact
+                                        sx={{ bottom: "auto", height: "58%", justifyContent: "flex-start", zIndex: 2 }}
+                                    />
+                                )}
 
                                 {/* Dark photographic overlay */}
                                 <Box

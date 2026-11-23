@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import Navbar from "@/components/navigation/Navbar";
 import LinkButton from "@/components/ui/LinkButton";
 
@@ -61,7 +62,7 @@ const pillars = [
   },
   {
     number: "02",
-    title: "Eco-Tech Innovation Hubs",
+    title: "EcoTech Innovation Hubs",
     description:
       " Connecting communities to accessible innovations, climate information and digital tools.",
     image: "/assets/images/community/taarifaecoapp.webp",
@@ -284,11 +285,15 @@ export default function WhoWeArePage() {
                     lineHeight: 1.95,
                   }}
                 >
-                  Square One Eco Africa is driven by the belief that lasting
-                  environmental and livelihood solutions are built with
-                  communities. We connect local knowledge, practical skills,
-                  technology, storytelling and partnerships to turn shared
-                  challenges into opportunities for action.
+                  Practical change begins with people who understand their
+                  communities, the challenges they face and the possibilities
+                  they want to create. We bring community and grassroots
+                  co-creation together with practical skills, climate
+                  technology, climate-tech innovation, partnerships and
+                  storytelling to turn local knowledge into climate solutions.
+                  By strengthening community agency, capabilities, livelihoods
+                  and local leadership, we support transformational impact that
+                  people can sustain and expand on their own terms.
                 </Typography>
               </Grid>
 
@@ -301,12 +306,10 @@ export default function WhoWeArePage() {
                     bgcolor: "#E5E5DD",
                   }}
                 >
-                  <Image
-                    src="/assets/images/community/countyofficersmatharerozalia.JPEG"
-                    alt="Community and county-level engagement in Mathare"
-                    fill
-                    sizes="(max-width: 900px) 100vw, 60vw"
-                    style={{ objectFit: "cover" }}
+                  {/* Feedback 19 Nov 2026, §3.1: replace the standing/group photo. */}
+                  <ImagePlaceholder
+                    needed="Stephanie Ndiritu facilitating a community meeting inside a church in Mathare (an action photo, not a standing group)."
+                    source="CECI Next Steps / community baseline assessment / Mathare imagery folders, including the images shared for the video editing work"
                   />
                 </Box>
                 <Typography
@@ -319,7 +322,7 @@ export default function WhoWeArePage() {
                     textTransform: "uppercase",
                   }}
                 >
-                  Working together towards practical solutions
+                  Facilitating community conversations in Mathare
                 </Typography>
               </Grid>
             </Grid>
@@ -386,9 +389,9 @@ export default function WhoWeArePage() {
                     color: "#5F5F55",
                   }}
                 >
-                  To co-design sustainable solutions with communities through
-                  climate tech innovation, storytelling, advocacy, partnerships
-                  and digital tools.
+                  To co-design practical climate solutions with communities
+                  through innovation, partnerships, and storytelling for
+                  transformational impact.
                 </Typography>
               </Grid>
             </Grid>
@@ -715,7 +718,7 @@ export default function WhoWeArePage() {
                 >
                   Behind every initiative are people contributing their
                   knowledge, skills, time and commitment. Get to know the
-                  individuals and leadership supporting SOEA's work.
+                  individuals and leadership supporting SOEA&rsquo;s work.
                 </Typography>
 
                 <Stack

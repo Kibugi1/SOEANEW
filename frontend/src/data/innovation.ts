@@ -1,7 +1,7 @@
 /**
  * Innovation page content (docs/consolidated-guide.pdf, §08).
  *
- * Guide rules: show TAARiFA Eco only as a short "Coming Soon" preview and
+ * Guide rules: show Taarifa Eco only as a short "Coming Soon" preview and
  * keep it clearly distinct from a released application. Do not publish
  * technical architecture, detailed financial pathways, partner
  * negotiations, unpublished interfaces or internal concept notes.
@@ -20,24 +20,26 @@ export const innovationIntro = {
   eyebrow: "08 / Innovation",
   title: "Connecting community skills to practical innovation",
   intro:
-    "Through Eco-Tech Innovation Hubs, SOEA explores technologies, digital tools and enterprise models that help communities apply knowledge, access opportunities and strengthen climate resilience.",
+    // Feedback 19 Nov 2026, §6.
+    "SOEA’s EcoTech Innovation Hubs connect community knowledge with practical climate technologies, digital tools and local innovation. Our developing Taarifa Eco application brings together layers of climate and early warning information, community savings and digital financial inclusion, adaptation financing, participatory land-use information and zoning, and practical decisions for farming, grazing, rangeland restoration and ecosystem resilience. Designed with rural and climate-vulnerable communities, the platform is intended to turn timely information into concrete local action and stronger livelihoods. As the prototype develops, Taarifa Eco will inform the growth of community-centered EcoTech Innovation Hubs that support learning, innovation and practical solutions across SOEA’s areas of focus.",
 };
 
 export const taarifa = {
-  name: "TAARiFA Eco",
-  status: "Coming soon",
-  statusNote: "Concept and prototype in development. Not yet released.",
+  name: "Taarifa Eco",
+  status: "Prototype in development · Coming soon",
+  statusNote: "Prototype in development. Not yet a public application.",
   tagline:
     "Connecting climate intelligence, community decisions and resilience opportunities.",
   description: [
-    "TAARiFA Eco is a community-centered, AI-enabled climate resilience concept currently being developed by SOEA. It seeks to connect three elements: reliable climate and environmental information; practical, locally relevant livelihood and ecosystem-action choices; and pathways to markets, suitable finance and follow-through.",
+    "Taarifa Eco is a community-centered, AI-enabled climate resilience concept currently being developed by SOEA. It seeks to connect three elements: reliable climate and environmental information; practical, locally relevant livelihood and ecosystem-action choices; and pathways to markets, suitable finance and follow-through.",
     "It will help people interpret changing conditions, explore their options and connect with opportunities and partners who can support action.",
+    "CECI develops people’s skills and community champions; Taarifa Eco develops enabling technology and decision support. Both connect through co-design, evidence and the ambition for community-owned solutions.",
   ],
   comingSoon:
     "Watch this space as we develop the idea and prepare to introduce our prototype.",
   image: {
     src: "/assets/images/community/taarifaecoapp.webp",
-    alt: "Illustration of the TAARiFA Eco concept",
+    alt: "Illustration of the Taarifa Eco concept",
     placeholder: true,
   } satisfies InnovationImage,
 };
@@ -48,25 +50,49 @@ export interface TaarifaLayer {
   description: string;
 }
 
-/** The three connected layers, in order from information to action. */
+/** Seven layers, from community knowledge to hub support (feedback 19 Nov 2026, §6). */
 export const taarifaLayers: TaarifaLayer[] = [
   {
     number: "01",
-    title: "Climate & ecosystem intelligence",
+    title: "Local knowledge & community input",
     description:
-      "Relevant forecasts, environmental information and community knowledge.",
+      "What communities already know about their land, livelihoods and risks, shared on their terms.",
   },
   {
     number: "02",
-    title: "Livelihood & ecosystem choices",
+    title: "Climate information & early warnings",
     description:
-      "Practical guidance and opportunities adapted to each community and sector.",
+      "Timely, localized forecasts and early warnings that people can act on.",
   },
   {
     number: "03",
-    title: "Finance, market & implementation connections",
+    title: "Digital savings & financial inclusion",
     description:
-      "Helping people identify relevant partners, resources and ways to follow through.",
+      "Community savings and digital financial tools that build a buffer against shocks.",
+  },
+  {
+    number: "04",
+    title: "Adaptation finance & matched resources",
+    description:
+      "Connections to adaptation finance and matched-resource opportunities.",
+  },
+  {
+    number: "05",
+    title: "Land use, zoning, agriculture & rangeland planning",
+    description:
+      "Participatory land-use information and zoning for farming, grazing and rangeland decisions.",
+  },
+  {
+    number: "06",
+    title: "Restoration action & outcome tracking",
+    description:
+      "Practical restoration work, with progress and outcomes tracked over time.",
+  },
+  {
+    number: "07",
+    title: "EcoTech Innovation Hub support",
+    description:
+      "Community-centered hubs that support learning, innovation and follow-through.",
   },
 ];
 
@@ -139,7 +165,7 @@ export const pathwaySteps = [
 
 export const innovationLinks = {
   followUpdates: {
-    label: "Follow TAARiFA Eco updates",
+    label: "Follow Taarifa Eco updates",
     href: "/stay-connected?topic=taarifa-eco",
   },
   climateInnovation: {

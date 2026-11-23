@@ -35,7 +35,7 @@ const scenes: Scene[] = [
     title: "Understand the Challenge",
     caption: "Listen to the community",
     description:
-      "We listen to communities, conduct assessments and document local experiences. Every meaningful solution begins with understanding the people and places involved.",
+      "Listen to lived experience, community priorities and aspirations.",
     image: "/assets/images/championsjourney/understandthechallenge.jpg",
     alt: "A waste picker weighs a sack of collected materials on a hanging scale while community members and SOEA team members record the reading.",
   },
@@ -44,7 +44,7 @@ const scenes: Scene[] = [
     title: "Assess Together",
     caption: "Identify priorities together",
     description:
-      "We identify needs, existing skills, opportunities, barriers and possible solutions alongside the communities we work with.",
+      "Gather baseline evidence, analyze opportunities and barriers, and validate findings with communities.",
     image: "/assets/images/championsjourney/assesstogether.jpeg",
     alt: "Community members and SOEA staff sit in a circle with worksheets, discussing priorities together.",
   },
@@ -53,7 +53,7 @@ const scenes: Scene[] = [
     title: "Co-Design",
     caption: "Develop practical solutions",
     description:
-      "Communities, technical experts and partners work together to develop practical solutions and learning pathways that respond to local realities.",
+      "Develop practical solutions, curriculum content and pathways with communities, technical partners and institutions.",
     image: "/assets/images/championsjourney/codesign.jpeg",
     alt: "SOEA team members and partners stand together in front of SOEA and Mathare banners after a co-design session.",
     imagePosition: "center 40%",
@@ -63,7 +63,7 @@ const scenes: Scene[] = [
     title: "Build Capabilities",
     caption: "Learn, practise and grow",
     description:
-      "We connect participants to training, mentorship, technical skills, legal awareness, financial literacy and occupational health and safety.",
+      "Deliver practical skills, legal rights advocacy, safety, social skills and enterprise learning.",
     image: "/assets/images/championsjourney/buildcapabilities.jpeg",
     alt: "A facilitator speaks to participants during a training session in a community hall, beside an SOEA banner.",
     imagePosition: "center 35%",
@@ -73,16 +73,16 @@ const scenes: Scene[] = [
     title: "Connect to Opportunity",
     caption: "Turn skills into opportunity",
     description:
-      "We facilitate access to practical experience, markets, financial services, enterprise pathways and partnerships.",
+      "Support demonstration, market linkages, financial services and sustainable livelihoods.",
     image: "/assets/images/championsjourney/connecttoopportunity.jpg",
     alt: "A sack of sorted plastics and other recyclable materials collected by waste pickers.",
   },
   {
     number: "06",
-    title: "Follow Through",
+    title: "Measure, Document, Learn, Replicate, Scale & Adopt",
     caption: "Learn, measure and improve",
     description:
-      "We track progress, document learning and assess outcomes, including through three-month and six-month follow-up where applicable.",
+      "Follow up, assess change, communicate evidence, adapt what works and support lasting community or institutional ownership.",
     image: "/assets/images/championsjourney/followthrough.jpg",
     alt: "SOEA team members review survey forms with community members during a field follow-up.",
   },
