@@ -286,3 +286,14 @@ def test_refresh_requires_a_valid_token_and_respects_logout(admin_client, admin_
     assert admin_client.post("/api/v1/auth/refresh").status_code == 401
     admin_client.post("/api/v1/auth/logout", headers=auth(admin_token))
     assert admin_client.post("/api/v1/auth/refresh", headers=auth(admin_token)).status_code == 401
+
+
+def test_profile_options_show_which_account_is_linked(admin_client, admin_token):
+    linked = make_profile("chika-atueyi", "Chika Atueyi")
+    make_profile("free-person")
+    make_user("chika@example.org", UserRole.AUTHOR, profile=linked, name="Chika Atueyi")
+
+    options = admin_client.get("/api/v1/admin/team-profiles", headers=auth(admin_token)).get_json()["data"]
+    by_slug = {p["slug"]: p for p in options}
+    assert by_slug["chika-atueyi"]["linked_account"]["email"] == "chika@example.org"
+    assert by_slug["free-person"]["linked_account"] is None

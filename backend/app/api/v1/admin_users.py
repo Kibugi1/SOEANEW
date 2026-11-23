@@ -202,4 +202,15 @@ def list_profile_options():
     profiles = db.session.scalars(
         select(TeamProfile).order_by(TeamProfile.display_name, TeamProfile.id)
     ).all()
-    return item_response(ProfileOptionSchema(many=True).dump(profiles))
+    # Which account already writes as each profile (a profile links to one account).
+    owners = {
+        user.team_profile_id: user
+        for user in db.session.scalars(select(User).where(User.team_profile_id.is_not(None)))
+    }
+    data = ProfileOptionSchema(many=True).dump(profiles)
+    for item, profile in zip(data, profiles):
+        owner = owners.get(profile.id)
+        item["linked_account"] = (
+            {"id": str(owner.id), "full_name": owner.full_name, "email": owner.email} if owner else None
+        )
+    return item_response(data)

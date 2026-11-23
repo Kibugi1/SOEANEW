@@ -327,7 +327,7 @@ Delivery results include attempted, sent, failed, skipped and outstanding counts
 | GET | `/admin/users/<id>` | Account details |
 | PATCH | `/admin/users/<id>` | Change `full_name`, `role`, `is_active`, `team_profile_slug` |
 | POST | `/admin/users/<id>/reset-password` | Set a new temporary password |
-| GET | `/admin/team-profiles` | Every team profile, for linking an account to the profile it writes as |
+| GET | `/admin/team-profiles` | Every team profile, for linking an account to the profile it writes as; `linked_account` (`id`, `full_name`, `email`) shows who already writes as it |
 
 Create:
 
