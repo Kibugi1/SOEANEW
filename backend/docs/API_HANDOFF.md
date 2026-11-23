@@ -361,8 +361,8 @@ or `{"area", "skills", "availability", "motivation"}` for a volunteer.
 | Method | Endpoint | Purpose |
 |---|---|---|
 | POST | `/admin/media` | Upload one file (`multipart/form-data`: `file`, optional `alt_text`) |
-| GET | `/admin/media` | List files, newest first; filter `kind` = `image` or `document` |
-| GET | `/admin/media/<id>` | File details, plus `in_use` (how many records use it) |
+| GET | `/admin/media` | List files, newest first; filters `kind` (`image` or `document`), `q` (file name or description) and `missing_alt=true` (images with no description) |
+| GET | `/admin/media/<id>` | File details, plus `in_use` (how many records use it) and `used_in` (those records by name, with a dashboard path where one exists; empty for authors) |
 | PATCH | `/admin/media/<id>` | Change `alt_text` |
 | DELETE | `/admin/media/<id>` | Delete; HTTP 409 while the file is still in use |
 

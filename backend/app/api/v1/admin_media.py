@@ -8,13 +8,13 @@ from pathlib import PurePath
 from uuid import UUID
 
 from flask import abort, g, request
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 
 from app.api.decorators import admin_required
-from app.api.helpers import collection_response, item_response, paginate
+from app.api.helpers import collection_response, item_response, like_pattern, paginate
 from app.errors import error_response
 from app.extensions import db
-from app.models import AuditEvent, MediaAsset, UserRole
+from app.models import AuditEvent, MediaAsset, Partner, Program, Resource, Story, StoryMedia, TeamProfile, UserRole
 from app.schemas.admin import MediaAssetSchema, MediaListQuerySchema, MediaUpdateSchema
 from app.services.media_storage import UploadError, delete_stored, public_url_for, store_upload
 
@@ -60,6 +60,37 @@ def media_usage_count(asset_id) -> int:
                         select(func.count()).select_from(table).where(column == asset_id)
                     )
     return total
+
+
+def media_usage(asset_id) -> list[dict]:
+    """The records that use this file, named, with a dashboard link where one exists.
+
+    media_usage_count stays the authority for "can it be deleted" (it checks every
+    table); this list is for showing people what to change first.
+    """
+    used = []
+    for partner in db.session.scalars(select(Partner).where(Partner.logo_id == asset_id)):
+        used.append({"type": "partner", "label": "Partner logo", "title": partner.name,
+                     "admin_path": f"/admin/partners/{partner.id}"})
+    for program in db.session.scalars(select(Program).where(Program.cover_image_id == asset_id)):
+        used.append({"type": "program", "label": "Program cover", "title": program.title,
+                     "admin_path": f"/admin/programs/{program.id}"})
+    stories = {}  # a cover that is also in the gallery is listed once, as the cover
+    for story in db.session.scalars(select(Story).where(Story.cover_image_id == asset_id)):
+        stories[story.id] = (story, "cover photo")
+    gallery = select(Story).join(StoryMedia, StoryMedia.story_id == Story.id).where(StoryMedia.media_id == asset_id)
+    for story in db.session.scalars(gallery):
+        stories.setdefault(story.id, (story, "photo"))
+    for story, what in stories.values():
+        kind = "Event" if story.story_type == "event" else "Story"
+        used.append({"type": "story", "label": f"{kind} {what}", "title": story.title,
+                     "admin_path": f"/admin/stories/{story.id}"})
+    for profile in db.session.scalars(select(TeamProfile).where(TeamProfile.image_id == asset_id)):
+        used.append({"type": "team_profile", "label": "Team profile photo", "title": profile.display_name,
+                     "admin_path": None})
+    for resource in db.session.scalars(select(Resource).where(Resource.cover_image_id == asset_id)):
+        used.append({"type": "resource", "label": "Resource cover", "title": resource.title, "admin_path": None})
+    return used
 
 
 @api_v1.post("/admin/media")
@@ -117,6 +148,18 @@ def list_media():
         statement = statement.where(MediaAsset.uploaded_by_user_id == g.current_user.id)
     if args.get("kind"):
         statement = statement.where(MediaAsset.kind == args["kind"])
+    if args.get("q"):
+        pattern = like_pattern(args["q"])
+        statement = statement.where(or_(
+            MediaAsset.original_filename.ilike(pattern, escape="\\"),
+            MediaAsset.alt_text.ilike(pattern, escape="\\"),
+        ))
+    if args.get("missing_alt"):
+        # Images that still need a description before they can appear on a public page.
+        statement = statement.where(
+            MediaAsset.kind == "image",
+            or_(MediaAsset.alt_text.is_(None), func.trim(MediaAsset.alt_text) == ""),
+        )
     statement = statement.order_by(MediaAsset.created_at.desc(), MediaAsset.id)
     pagination = paginate(statement, args)
     return collection_response(_schema.dump(pagination.items, many=True), pagination)
@@ -128,6 +171,8 @@ def get_media(asset_id):
     asset = _get_asset(asset_id)
     data = _schema.dump(asset)
     data["in_use"] = media_usage_count(asset.id)
+    # Names of other people's records are for admins and editors; authors see the count.
+    data["used_in"] = media_usage(asset.id) if _is_manager() else []
     return item_response(data)
 
 

@@ -194,6 +194,10 @@ def test_file_in_use_cannot_be_deleted(media_client, tmp_path):
 
     detail = media_client.get(f"/api/v1/admin/media/{data['id']}", headers=auth(token)).get_json()["data"]
     assert detail["in_use"] == 1
+    assert detail["used_in"] == [{
+        "type": "partner", "label": "Partner logo", "title": "Mr. Green",
+        "admin_path": f"/admin/partners/{db.session.query(Partner).one().id}",
+    }]
     assert media_client.delete(f"/api/v1/admin/media/{data['id']}", headers=auth(token)).status_code == 409
 
     db.session.query(Partner).delete()
@@ -201,3 +205,56 @@ def test_file_in_use_cannot_be_deleted(media_client, tmp_path):
     key = asset.storage_key
     assert media_client.delete(f"/api/v1/admin/media/{data['id']}", headers=auth(token)).status_code == 204
     assert not (tmp_path / key).exists()
+
+
+def test_search_and_missing_description_filters(media_client):
+    token = token_for(media_client, "editor@example.org")
+    upload(media_client, token, image_bytes(), filename="dandora-meeting.jpg", alt_text="Waste pickers in Dandora")
+    upload(media_client, token, image_bytes(), filename="untitled.jpg")
+    upload(media_client, token, image_bytes(), filename="blank.jpg", alt_text="   ")
+    upload(media_client, token, b"%PDF-1.4\n%%EOF", filename="report.pdf")
+
+    def total(query):
+        response = media_client.get(f"/api/v1/admin/media?{query}", headers=auth(token))
+        return response.get_json()["meta"]["pagination"]["total"]
+
+    assert total("q=dandora") == 1  # matches file name and description, listed once
+    assert total("q=waste") == 1
+    assert total("q=%25") == 0  # wildcards are literal
+    assert total("missing_alt=true") == 2  # images only; documents need no description
+
+
+def test_authors_get_a_count_but_no_names_of_where_a_file_is_used(media_client):
+    token = token_for(media_client, "author@example.org")
+    data = upload(media_client, token, image_bytes()).get_json()["data"]
+    db.session.add(Partner(slug="p", name="Private Partner", partner_type="business",
+                           logo_id=__import__("uuid").UUID(data["id"])))
+    db.session.commit()
+
+    detail = media_client.get(f"/api/v1/admin/media/{data['id']}", headers=auth(token)).get_json()["data"]
+    assert detail["in_use"] == 1 and detail["used_in"] == []
+    db.session.query(Partner).delete()
+    db.session.commit()
+
+
+def test_used_in_names_story_covers_and_gallery_photos_once(media_client):
+    import uuid
+
+    from app.models import Story, StoryMedia
+
+    token = token_for(media_client, "editor@example.org")
+    asset_id = uuid.UUID(upload(media_client, token, image_bytes()).get_json()["data"]["id"])
+    cover_and_gallery = Story(slug="a", title="Super Day", summary="S", body="B", story_type="event",
+                              cover_image_id=asset_id)
+    gallery_only = Story(slug="b", title="Curriculum", summary="S", body="B")
+    db.session.add_all([cover_and_gallery, gallery_only])
+    db.session.flush()
+    db.session.add_all([StoryMedia(story_id=cover_and_gallery.id, media_id=asset_id, sort_order=0),
+                        StoryMedia(story_id=gallery_only.id, media_id=asset_id, sort_order=0)])
+    db.session.commit()
+
+    used = media_client.get(f"/api/v1/admin/media/{asset_id}", headers=auth(token)).get_json()["data"]["used_in"]
+    assert sorted((u["label"], u["title"]) for u in used) == [("Event cover photo", "Super Day"), ("Story photo", "Curriculum")]
+    db.session.query(StoryMedia).delete()
+    db.session.query(Story).delete()
+    db.session.commit()

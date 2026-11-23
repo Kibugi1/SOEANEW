@@ -156,6 +156,8 @@ class MediaListQuerySchema(PaginationQuerySchema):
         unknown = EXCLUDE
 
     kind = fields.String(validate=validate.OneOf(("image", "document")))
+    q = fields.String(validate=validate.Length(min=1, max=100))
+    missing_alt = fields.Boolean()
 
 
 class MediaUpdateSchema(Schema):
