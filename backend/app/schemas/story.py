@@ -1,7 +1,9 @@
 """Public schemas for stories (list and detail)."""
 from marshmallow import fields, validate
 
-from .common import PaginationQuerySchema, UTCDateTime, safe_http_url
+from app.models.story import STORY_TYPES
+
+from .common import PaginationQuerySchema, UTCDateTime, public_image, safe_http_url
 from .refs import location_ref, program_ref, published, theme_ref
 from .team import public_authors
 from .urls import STORY_URL_PREFIX, TEAM_URL_PREFIX
@@ -23,6 +25,28 @@ def _public_image(asset):
         "url": url,
         "alt_text": asset.alt_text,
     }
+
+def _event(story):
+    """Event details for event records; null for ordinary stories."""
+    if story.story_type != "event":
+        return None
+    return {
+        "start_date": story.activity_date.isoformat() if story.activity_date else None,
+        "end_date": story.event_end_date.isoformat() if story.event_end_date else None,
+        "venue": story.venue,
+        "organiser": story.organiser,
+        "role": story.event_role,
+    }
+
+
+def _gallery(story):
+    items = []
+    for item in story.gallery:
+        image = public_image(item.media)
+        if image:
+            items.append({**image, "caption": item.caption})
+    return items
+
 
 def _first_program(story):
     programs = published(story.programs)
@@ -58,6 +82,8 @@ class StoryListSchema(Schema):
     summary = fields.String()
     published_at = UTCDateTime()
     activity_date = fields.Date(allow_none=True)
+    story_type = fields.String()
+    event = fields.Function(_event)
     authors = fields.Function(public_authors)
     program = fields.Function(_first_program)
     themes = fields.Function(lambda story: [theme_ref(t) for t in published(story.themes)])
@@ -78,6 +104,7 @@ class StoryDetailSchema(StoryListSchema):
     programs = fields.Function(lambda story: [program_ref(p) for p in published(story.programs)])
     phases = fields.Function(_public_phases)
     team = fields.Function(_public_team)
+    gallery = fields.Function(_gallery)
 
 
 class StoryListQuerySchema(PaginationQuerySchema):
@@ -87,3 +114,4 @@ class StoryListQuerySchema(PaginationQuerySchema):
     author = fields.String(validate=validate.Length(min=1, max=120))
     q = fields.String(validate=validate.Length(max=100))
     sort = fields.String(load_default="newest", validate=validate.OneOf(SORT_CHOICES))
+    type = fields.String(validate=validate.OneOf(STORY_TYPES))

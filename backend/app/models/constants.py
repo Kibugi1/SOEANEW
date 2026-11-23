@@ -9,7 +9,8 @@ Two different "status" ideas are kept apart on purpose:
 """
 
 PUBLICATION_STATUSES = ("draft", "published", "archived")
-PROGRESS_STATUSES = ("completed", "in_progress", "planned", "coming_soon")
+# "in_development" is shown as "Concept in development" (e.g. JEET Champions, Nov 2026).
+PROGRESS_STATUSES = ("completed", "in_progress", "planned", "coming_soon", "in_development")
 LOCATION_TYPES = ("country", "county", "community")
 ENGAGEMENT_STATUSES = ("active", "focus_only")
 TRACK_TYPES = ("core", "specialized")

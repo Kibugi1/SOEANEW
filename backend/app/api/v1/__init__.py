@@ -11,3 +11,4 @@ from . import auth  # noqa: E402,F401
 
 
 from . import newsletter_campaigns  # noqa: E402,F401
+from . import admin_users, admin_enquiries, admin_dashboard, admin_media, admin_partners, admin_programs, admin_stories  # noqa: E402,F401

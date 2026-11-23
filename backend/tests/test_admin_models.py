@@ -8,7 +8,8 @@ def test_user_model_registration():
 
 
 def test_user_roles():
-    assert UserRole.ALL == ("admin", "editor")
+    assert UserRole.ALL == ("admin", "editor", "author")
+    assert UserRole.CONTENT_MANAGERS == ("admin", "editor")
 
 
 def test_user_password_hashing():

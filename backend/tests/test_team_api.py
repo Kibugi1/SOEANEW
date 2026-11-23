@@ -14,7 +14,7 @@ DETAIL_KEYS = LIST_KEYS | {"bio", "education", "fun_fact", "email", "social_link
 STORY_REF_KEYS = {"slug", "title", "published_at", "url"}
 STORY_LIST_KEYS = {
     "id", "slug", "title", "summary", "published_at", "activity_date", "authors",
-    "program", "themes", "locations", "cover_image", "url",
+    "program", "themes", "locations", "cover_image", "url", "story_type", "event",
 }
 
 

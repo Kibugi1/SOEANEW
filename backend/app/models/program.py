@@ -77,8 +77,30 @@ class Program(UUIDPrimaryKeyMixin, TimestampMixin, db.Model):
     sort_order: Mapped[int] = mapped_column(default=0)
     publication_status: Mapped[str] = mapped_column(String(20), default="draft")
 
+    # A project that sits under a larger program (JEET Champions under CECI). RESTRICT:
+    # a program with sub-programs cannot be deleted.
+    parent_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("program.id", ondelete="RESTRICT"), nullable=True, index=True
+    )
+    lead_profile_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("team_profile.id", ondelete="SET NULL"), nullable=True
+    )
+    # Approved public contact for this program only (e.g. the project lead's work email).
+    contact_email: Mapped[str | None] = mapped_column(String(254))
+    # Call to action. While cta_pending is true the button is shown without a link
+    # ("contact route to be confirmed"), so it can be announced before it is approved.
+    cta_label: Mapped[str | None] = mapped_column(String(120))
+    cta_url: Mapped[str | None] = mapped_column(String(500))
+    cta_pending: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+
+    parent = relationship("Program", remote_side="Program.id", back_populates="children")
+    children = relationship("Program", back_populates="parent", order_by="Program.sort_order")
+    lead = relationship("TeamProfile")
     # WARNING: these relationships are unfiltered. Public code uses app.models.queries.
     themes = relationship("ThematicArea", secondary=program_themes, order_by="ThematicArea.sort_order")
+    partners = relationship(
+        "Partner", secondary="program_partners", back_populates="programs", order_by="Partner.sort_order",
+    )
     locations = relationship("Location", secondary=program_locations, order_by="Location.sort_order")
     phases = relationship(
         "Phase",

@@ -79,6 +79,26 @@ class BaseConfig:
     NEWSLETTER_UNSUBSCRIBE_URL = os.getenv("NEWSLETTER_UNSUBSCRIBE_URL")
     RATELIMIT_STORAGE_URI = os.getenv("RATELIMIT_STORAGE_URI", "memory://")
 
+    # Where website messages are announced by email. Every message is stored in the
+    # admin inbox whether or not these are set; an empty value skips the email.
+    INBOX_PARTNERSHIPS_EMAIL = os.getenv("INBOX_PARTNERSHIPS_EMAIL")
+    INBOX_VOLUNTEERS_EMAIL = os.getenv("INBOX_VOLUNTEERS_EMAIL")
+    INBOX_INFO_EMAIL = os.getenv("INBOX_INFO_EMAIL")
+    # Base URL of the admin dashboard, used for links in notification emails.
+    ADMIN_DASHBOARD_URL = os.getenv("ADMIN_DASHBOARD_URL", "http://localhost:3000/admin")
+
+    # Uploaded files. The API serves them from MEDIA_URL_PATH in development; in
+    # production put a web server or CDN in front and set MEDIA_BASE_URL to it.
+    UPLOAD_DIR = os.getenv("UPLOAD_DIR", str(BASE_DIR / "instance" / "uploads"))
+    MEDIA_URL_PATH = "/media"
+    MEDIA_BASE_URL = os.getenv("MEDIA_BASE_URL", "http://localhost:5000/media")
+    MAX_IMAGE_BYTES = 10 * 1024 * 1024
+    MAX_DOCUMENT_BYTES = 25 * 1024 * 1024
+    # Longest side of a stored image; larger photos are scaled down on upload.
+    MAX_IMAGE_DIMENSION = 2400
+    # Requests above this are refused before they are read (largest file + form overhead).
+    MAX_CONTENT_LENGTH = 26 * 1024 * 1024
+
 
 class DevelopmentConfig(BaseConfig):
     APP_ENV = "development"
@@ -91,6 +111,7 @@ class TestingConfig(BaseConfig):
     TESTING = True
     SECRET_KEY = "test-only-not-a-secret"
     SQLALCHEMY_DATABASE_URI = "sqlite://"  # in-memory; never touches real data
+    MEDIA_BASE_URL = "http://testserver/media"
     CORS_ORIGINS = ["http://localhost:3000"]
 
 

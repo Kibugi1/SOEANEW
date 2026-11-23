@@ -46,3 +46,28 @@ def safe_http_url(value) -> str | None:
     if parts.scheme.lower() in _ALLOWED_URL_SCHEMES and parts.netloc:
         return value
     return None
+
+
+def public_image(asset, fallback_alt: str | None = None) -> dict | None:
+    """Only the public parts of an uploaded image: its URL and alt text."""
+    if asset is None or getattr(asset, "kind", "image") != "image":
+        return None
+    url = safe_http_url(asset.public_url)
+    if not url:
+        return None
+    return {
+        "url": url,
+        "alt_text": asset.alt_text or fallback_alt,
+        "width": asset.width,
+        "height": asset.height,
+    }
+
+
+def safe_http_or_path(value) -> str | None:
+    """An http(s) URL, or a site-relative path such as /partner-with-us, else None."""
+    if not isinstance(value, str):
+        return None
+    value = value.strip()
+    if value.startswith("/") and not value.startswith("//") and "\\" not in value:
+        return value
+    return safe_http_url(value)

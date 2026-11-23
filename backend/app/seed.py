@@ -229,3 +229,10 @@ def register_cli(app) -> None:
 
     from .admin_cli import create_admin_command
     app.cli.add_command(create_admin_command)
+
+    from .content_seed import import_past_events_command, seed_jeet_command
+    app.cli.add_command(seed_jeet_command)
+    app.cli.add_command(import_past_events_command)
+
+    from .site_import import import_site_content_command
+    app.cli.add_command(import_site_content_command)

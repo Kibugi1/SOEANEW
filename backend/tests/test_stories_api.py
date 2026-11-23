@@ -8,9 +8,9 @@ from app.models import Story, StoryTeamMember, TeamProfile
 ISO_UTC = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 
 STORY_LIST_KEYS = {"id", "slug", "title", "summary", "published_at", "activity_date", "authors", "program",
-                   "themes", "locations", "cover_image", "url"}
+                   "themes", "locations", "cover_image", "url", "story_type", "event"}
 STORY_DETAIL_KEYS = STORY_LIST_KEYS | {"body", "next_step", "lessons", "outcomes", "video_url", "social_url",
-                                       "programs", "phases", "team"}
+                                       "programs", "phases", "team", "gallery"}
 
 PUBLIC_IN_ORDER = ["demo-public-newest", "demo-draft-profile-story", "demo-public-coauthored",
                    "demo-public-hidden-coauthor"]

@@ -11,9 +11,10 @@ THEME_KEYS = {"id", "slug", "name", "summary", "people_served", "is_anchor", "ur
 LOCATION_KEYS = {"id", "slug", "name", "location_type", "summary", "engagement_status",
                  "is_coordination_hub", "parent", "url"}
 PROGRAM_KEYS = {"id", "slug", "title", "short_name", "summary", "status", "is_featured",
-                "themes", "locations", "url"}
+                "themes", "locations", "url", "parent"}
 PROGRAM_DETAIL_KEYS = PROGRAM_KEYS | {"body", "start_date", "end_date", "phases", "learning_areas",
-                                      "specialized_pathways", "people", "stories"}
+                                      "specialized_pathways", "people", "stories",
+                                      "lead", "contact_email", "cta", "sub_programs"}
 PHASE_KEYS = {"slug", "sequence", "title", "summary", "period_label", "start_date", "end_date", "status"}
 MILESTONE_KEYS = {"slug", "title", "summary", "occurred_on", "venue", "status"}
 TRACK_KEYS = {"id", "slug", "title", "track_type", "summary", "intended_skills", "practical_activity",

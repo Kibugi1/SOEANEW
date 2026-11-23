@@ -42,6 +42,9 @@ def error_response(status: int, code: str, message: str, details: dict | None = 
 def register_error_handlers(app) -> None:
     @app.errorhandler(ValidationError)
     def handle_validation_error(exc: ValidationError):
+        # Never leave half-applied changes in the session after rejecting a request.
+        from .extensions import db
+        db.session.rollback()
         return error_response(
             VALIDATION_STATUS,
             "VALIDATION_ERROR",

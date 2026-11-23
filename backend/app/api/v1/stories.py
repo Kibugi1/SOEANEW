@@ -42,6 +42,8 @@ def list_stories():
         selectinload(Story.themes),
         selectinload(Story.locations),
     )
+    if args.get("type"):
+        statement = statement.where(Story.story_type == args["type"])
     if args.get("program"):
         statement = statement.where(Story.id.in_(_tagged_with(story_programs, "program_id", Program, args["program"])))
     if args.get("theme"):

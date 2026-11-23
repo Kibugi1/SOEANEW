@@ -6,9 +6,18 @@ from uuid import UUID
 from flask import abort, g, request
 from itsdangerous import BadData, SignatureExpired
 
+from app.errors import error_response
 from app.extensions import db
 from app.models import User
 from app.services.admin_auth import verify_admin_access_token
+
+
+# The only endpoints an account with a temporary password may use.
+PASSWORD_CHANGE_ENDPOINTS = frozenset({
+    "api_v1.admin_me",
+    "api_v1.admin_change_password",
+    "api_v1.admin_logout",
+})
 
 
 def admin_required(view):
@@ -41,6 +50,13 @@ def admin_required(view):
             abort(401, description="The access token is invalid or expired.")
 
         g.current_user = user
+
+        if user.must_change_password and request.endpoint not in PASSWORD_CHANGE_ENDPOINTS:
+            return error_response(
+                403,
+                "PASSWORD_CHANGE_REQUIRED",
+                "Choose a new password before continuing.",
+            )
         return view(*args, **kwargs)
 
     return wrapped
