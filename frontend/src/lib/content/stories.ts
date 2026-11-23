@@ -155,3 +155,28 @@ export async function getPublicStory(slug: string): Promise<PublicStory | null> 
   const builtIn = builtInStories.find((s) => s.slug === slug);
   return builtIn ? { story: builtIn, detail: null } : null;
 }
+
+/**
+ * Published stories tagged with any of these places (a county and the communities in
+ * it, e.g. Nairobi with Dandora and Mathare), newest first.
+ */
+export async function getStoriesForPlaces(slugs: string[], names: string[]): Promise<Story[]> {
+  "use cache";
+  cacheLife("minutes");
+  try {
+    if (API_BASE) {
+      const pages = await Promise.all(
+        slugs.map((slug) => getJson<{ data: ApiStoryListItem[] }>(`/stories?location=${encodeURIComponent(slug)}&per_page=50`)),
+      );
+      const seen = new Set<string>();
+      return pages
+        .flatMap((page) => page?.data ?? [])
+        .filter((item) => !seen.has(item.id) && Boolean(seen.add(item.id)))
+        .sort((a, b) => b.published_at.localeCompare(a.published_at))
+        .map(toStory);
+    }
+  } catch {
+    /* fall through */
+  }
+  return builtInStories.filter((story) => story.community.some((place) => names.includes(place)));
+}

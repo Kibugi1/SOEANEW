@@ -502,9 +502,12 @@ export default function GeoJourney({ map, counties }: { map: JourneyMapData; cou
                 </Typography>
                 <Typography sx={{ fontWeight: 700, color: "#504624", mt: 1, fontSize: "0.92rem" }}>{active.headline}</Typography>
                 <Typography sx={{ color: COLORS.muted, lineHeight: 1.75, mt: 1.5, fontSize: "0.95rem" }}>{active.description}</Typography>
-                {active.links && (
+                {(
                   <Stack direction="row" sx={{ flexWrap: "wrap", gap: 2, mt: 2 }}>
-                    {active.links.map((link) => (
+                    <Link href={`/where-we-work/${active.slug}`} style={{ color: "#504624", fontWeight: 700, fontSize: "0.9rem" }}>
+                      {active.name} County page →
+                    </Link>
+                    {(active.links ?? []).map((link) => (
                       <Link key={link.href} href={link.href} style={{ color: "#504624", fontWeight: 700, fontSize: "0.9rem" }}>
                         {link.label} →
                       </Link>

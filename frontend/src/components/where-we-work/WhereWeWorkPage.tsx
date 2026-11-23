@@ -414,7 +414,12 @@ export default function WhereWeWorkPage() {
               {content.geographicFocus.map((county, index) => (
                 <Box
                   key={county}
+                  component="a"
+                  href={`/where-we-work/${county.toLowerCase().replace(/\s+/g, "-")}`}
                   sx={{
+                    textDecoration: "none",
+                    transition: "background-color 200ms ease",
+                    "&:hover": { bgcolor: "#F5F3E8" },
                     bgcolor: "#FFFFFF",
                     minHeight: 125,
                     p: { xs: 2, md: 2.5 },
