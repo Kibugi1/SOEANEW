@@ -70,6 +70,8 @@ class BaseConfig:
     NEWSLETTER_CONSENT_TEXT_VERSION = os.getenv("NEWSLETTER_CONSENT_TEXT_VERSION", "v1")
     NEWSLETTER_TOKEN_MAX_AGE = 60 * 60 * 24
     ADMIN_ACCESS_TOKEN_MAX_AGE = 900
+    # Longest a signed-in session can be kept alive through /auth/refresh.
+    ADMIN_SESSION_MAX_AGE = 12 * 60 * 60
     SMTP_HOST = os.getenv("SMTP_HOST")
     SMTP_PORT = 587
     SMTP_USERNAME = os.getenv("SMTP_USERNAME")

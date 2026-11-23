@@ -262,3 +262,27 @@ def test_login_and_me_return_profile_and_name(admin_client):
     user = login.get_json()["data"]["user"]
     assert user["full_name"] == "Chika Atueyi"
     assert user["team_profile"]["slug"] == "chika-atueyi"
+
+
+# --- Session refresh -----------------------------------------------------------------------------
+
+def test_refresh_issues_new_token_within_session_limit(admin_client, admin_token, app, monkeypatch):
+    response = admin_client.post("/api/v1/auth/refresh", headers=auth(admin_token))
+    assert response.status_code == 200
+    new_token = response.get_json()["data"]["access_token"]
+    assert admin_client.get("/api/v1/auth/me", headers=auth(new_token)).status_code == 200
+
+    # After the 12-hour session limit, refresh refuses and the person signs in again.
+    import time
+    real_time = time.time
+    monkeypatch.setattr("app.services.admin_auth.time.time", lambda: real_time() + 13 * 60 * 60)
+    app.config["ADMIN_ACCESS_TOKEN_MAX_AGE"] = 14 * 60 * 60  # keep the token itself valid
+    expired = admin_client.post("/api/v1/auth/refresh", headers=auth(new_token))
+    assert expired.status_code == 401
+    assert expired.get_json()["error"]["code"] == "SESSION_EXPIRED"
+
+
+def test_refresh_requires_a_valid_token_and_respects_logout(admin_client, admin_token):
+    assert admin_client.post("/api/v1/auth/refresh").status_code == 401
+    admin_client.post("/api/v1/auth/logout", headers=auth(admin_token))
+    assert admin_client.post("/api/v1/auth/refresh", headers=auth(admin_token)).status_code == 401

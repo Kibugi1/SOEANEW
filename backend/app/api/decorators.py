@@ -17,6 +17,7 @@ PASSWORD_CHANGE_ENDPOINTS = frozenset({
     "api_v1.admin_me",
     "api_v1.admin_change_password",
     "api_v1.admin_logout",
+    "api_v1.admin_refresh",
 })
 
 
@@ -50,6 +51,7 @@ def admin_required(view):
             abort(401, description="The access token is invalid or expired.")
 
         g.current_user = user
+        g.token_claims = claims
 
         if user.must_change_password and request.endpoint not in PASSWORD_CHANGE_ENDPOINTS:
             return error_response(

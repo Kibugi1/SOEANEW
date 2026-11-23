@@ -12,7 +12,7 @@ from app.errors import error_response
 from app.models import AuditEvent, User
 from app.schemas.admin import PasswordChangeSchema
 from app.schemas.admin_auth import AdminLoginSchema
-from app.services.admin_auth import generate_admin_access_token
+from app.services.admin_auth import generate_admin_access_token, session_expired
 
 from . import api_v1
 
@@ -74,6 +74,23 @@ def _user_payload(user):
 @admin_required
 def admin_me():
     return item_response(_user_payload(g.current_user))
+
+
+@api_v1.post("/auth/refresh")
+@admin_required
+@limiter.limit("30 per minute")
+def admin_refresh():
+    """Swap a still-valid token for a fresh one, within the session's 12-hour limit."""
+    claims = g.token_claims
+    if session_expired(claims):
+        return error_response(401, "SESSION_EXPIRED", "Your session has ended. Please sign in again.")
+    token = generate_admin_access_token(g.current_user, session_started_at=claims["session_started_at"])
+    return item_response({
+        "access_token": token,
+        "token_type": "Bearer",
+        "expires_in": current_app.config["ADMIN_ACCESS_TOKEN_MAX_AGE"],
+        "user": _user_payload(g.current_user),
+    })
 
 
 @api_v1.post("/auth/change-password")

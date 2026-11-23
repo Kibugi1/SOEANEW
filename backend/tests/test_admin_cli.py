@@ -1,4 +1,4 @@
-﻿import pytest
+import pytest
 
 from app.extensions import db
 from app.models import AuditEvent, User, UserRole
@@ -179,3 +179,75 @@ def test_create_admin_rejects_password_over_256_characters(
         ).first()
 
         assert user is None
+
+
+def test_create_admin_with_name_and_linked_profile(app, cli_runner):
+    from app.models import TeamProfile
+
+    with app.app_context():
+        db.session.add(TeamProfile(slug="brian-kibugi", display_name="Brian Kibugi",
+                                   role_title="ICT Volunteer", role_type="volunteer", status="published"))
+        db.session.commit()
+
+    result = cli_runner.invoke(
+        args=["create-admin", "--profile", "brian-kibugi"],
+        input="brian@example.com\nauthor\nStrongPassword123!\nStrongPassword123!\ny\n",
+    )
+    assert result.exit_code == 0, result.output
+    assert "Linked to profile: Brian Kibugi (brian-kibugi)" in result.output
+
+    with app.app_context():
+        user = db.session.query(User).filter_by(email="brian@example.com").one()
+        assert user.role == UserRole.AUTHOR
+        assert user.full_name == "Brian Kibugi"  # taken from the profile when --name is omitted
+        assert user.team_profile.slug == "brian-kibugi"
+
+    again = cli_runner.invoke(
+        args=["create-admin", "--profile", "brian-kibugi"],
+        input="other@example.com\nauthor\nStrongPassword123!\nStrongPassword123!\ny\n",
+    )
+    assert again.exit_code != 0
+    assert "already linked" in again.output
+
+
+def test_create_admin_rejects_unknown_profile(cli_runner):
+    result = cli_runner.invoke(args=["create-admin", "--profile", "nobody"], input="")
+    assert result.exit_code != 0
+    assert "No team profile" in result.output
+
+
+@pytest.mark.parametrize("password, message", [
+    ("Strong\tPassword123!", "invisible character"),
+    (" StrongPassword123!", "space"),
+    ("StrongPassword123! ", "space"),
+])
+def test_create_admin_rejects_passwords_that_cannot_be_typed_back(cli_runner, password, message):
+    result = cli_runner.invoke(
+        args=["create-admin"],
+        input=f"paste@example.com\nadmin\n{password}\n{password}\ny\n",
+    )
+    assert result.exit_code != 0
+    assert message in result.output
+    assert db.session.query(User).filter_by(email="paste@example.com").count() == 0
+
+
+def test_set_password_resets_and_signs_out(app, cli_runner):
+    with app.app_context():
+        user = User(email="reset@example.com", role=UserRole.ADMIN)
+        user.set_password("OldPassword12345!")
+        db.session.add(user)
+        db.session.commit()
+        version = user.token_version
+
+    result = cli_runner.invoke(
+        args=["set-password", "RESET@example.com"],
+        input="NewPassword12345!\nNewPassword12345!\n",
+    )
+    assert result.exit_code == 0, result.output
+    with app.app_context():
+        user = db.session.query(User).filter_by(email="reset@example.com").one()
+        assert user.check_password("NewPassword12345!")
+        assert user.token_version == version + 1
+
+    missing = cli_runner.invoke(args=["set-password", "nobody@example.com"], input="")
+    assert missing.exit_code != 0
