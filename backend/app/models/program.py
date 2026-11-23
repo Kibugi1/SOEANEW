@@ -92,10 +92,15 @@ class Program(UUIDPrimaryKeyMixin, TimestampMixin, db.Model):
     cta_label: Mapped[str | None] = mapped_column(String(120))
     cta_url: Mapped[str | None] = mapped_column(String(500))
     cta_pending: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    # Photo for program cards and the top of the program page (an uploaded image).
+    cover_image_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("media_asset.id", ondelete="SET NULL"), nullable=True
+    )
 
     parent = relationship("Program", remote_side="Program.id", back_populates="children")
     children = relationship("Program", back_populates="parent", order_by="Program.sort_order")
     lead = relationship("TeamProfile")
+    cover_image = relationship("MediaAsset")
     # WARNING: these relationships are unfiltered. Public code uses app.models.queries.
     themes = relationship("ThematicArea", secondary=program_themes, order_by="ThematicArea.sort_order")
     partners = relationship(

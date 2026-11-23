@@ -23,6 +23,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import ImageField, { ImageValue } from "@/components/admin/ImageField";
 import { ApiError, Collection, apiData, apiFetch } from "@/lib/admin/api";
 import { useAdminSession } from "@/lib/admin/session";
 import {
@@ -56,6 +57,7 @@ interface Form {
   cta_label: string;
   cta_url: string;
   cta_pending: boolean;
+  cover: ImageValue | null;
   theme_slugs: string[];
   primary_theme_slug: string;
   location_slugs: string[];
@@ -82,12 +84,18 @@ function formFrom(program: AdminProgram | null): Form {
     cta_label: program?.cta_label ?? "",
     cta_url: program?.cta_url ?? "",
     cta_pending: program?.cta_pending ?? false,
+    cover: program?.cover_image
+      ? { id: program.cover_image.id, url: program.cover_image.url, alt_text: program.cover_image.alt_text }
+      : null,
     theme_slugs: program?.themes.map((t) => t.slug) ?? [],
     primary_theme_slug: program?.primary_theme ?? "",
     location_slugs: program?.locations.map((l) => l.slug) ?? [],
     partner_slugs: program?.partners.map((p) => p.slug) ?? [],
   };
 }
+
+// Alt text is saved on the image directly, so only which image is linked counts as a change.
+const comparable = (f: Form) => JSON.stringify({ ...f, cover: f.cover?.id ?? null });
 
 const orNull = (value: string) => (value.trim() ? value.trim() : null);
 
@@ -108,6 +116,7 @@ function payloadFrom(form: Form, isNew: boolean) {
     cta_label: orNull(form.cta_label),
     cta_url: form.cta_pending ? null : orNull(form.cta_url),
     cta_pending: form.cta_pending,
+    cover_image_id: form.cover?.id ?? null,
     theme_slugs: form.theme_slugs,
     primary_theme_slug: form.theme_slugs.includes(form.primary_theme_slug) ? form.primary_theme_slug : null,
     location_slugs: form.location_slugs,
@@ -133,6 +142,7 @@ const FIELD_LABELS: Record<string, string> = {
   contact_email: "Contact email",
   cta_label: "Button text",
   cta_url: "Button link",
+  cover_image_id: "Cover photo",
   theme_slugs: "Themes",
   primary_theme_slug: "Main theme",
   location_slugs: "Places",
@@ -156,7 +166,7 @@ export default function ProgramEditor({ program }: { program: AdminProgram | nul
 
   const [saved, setSaved] = useState<AdminProgram | null>(program);
   const [form, setForm] = useState<Form>(() => formFrom(program));
-  const [baseline, setBaseline] = useState(() => JSON.stringify(formFrom(program)));
+  const [baseline, setBaseline] = useState(() => comparable(formFrom(program)));
   const [options, setOptions] = useState<PickerOptions | null>(null);
   const [partners, setPartners] = useState<Named[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -168,7 +178,7 @@ export default function ProgramEditor({ program }: { program: AdminProgram | nul
   const publication: PublicationStatus = saved?.publication_status ?? "draft";
   // Editors prepare drafts; once a program is public only an admin can change it.
   const canEdit = isAdmin || publication === "draft";
-  const dirty = JSON.stringify(form) !== baseline;
+  const dirty = comparable(form) !== baseline;
   const disabled = !canEdit || busy;
 
   useEffect(() => {
@@ -243,7 +253,7 @@ export default function ProgramEditor({ program }: { program: AdminProgram | nul
       setSaved(next);
       const nextForm = formFrom(next);
       setForm(nextForm);
-      setBaseline(JSON.stringify(nextForm));
+      setBaseline(comparable(nextForm));
       setErrors({});
       setMessage({ severity: "success", text: done });
       if (!saved) router.replace(`/admin/programs/${next.id}`);
@@ -350,6 +360,19 @@ export default function ProgramEditor({ program }: { program: AdminProgram | nul
                 fullWidth
                 error={Boolean(errors.body)}
                 helperText={errors.body ?? "Leave a blank line between paragraphs. **Bold**, and lines starting with “- ” become a list."}
+              />
+            </Section>
+
+            <Section title="Cover photo" hint="Shown on the program card and across the top of the program page.">
+              <ImageField
+                label="Cover photo"
+                hint="A landscape photo works best (JPEG, PNG or WebP, up to 10 MB). Only use photos where everyone recognisable has agreed to appear."
+                value={form.cover}
+                onChange={(cover) => set("cover", cover)}
+                disabled={disabled}
+                altPlaceholder="e.g. Waste pickers at a CECI training session in Dandora"
+                previewHeight={220}
+                error={errors.cover_image_id}
               />
             </Section>
 

@@ -14,6 +14,7 @@ from app.api.admin_common import (
     check_slug_free,
     field_error,
     get_or_404,
+    resolve_image,
     resolve_slugs,
     unique_slug,
 )
@@ -93,6 +94,8 @@ def _apply_fields(program: Program, data: dict) -> None:
     if "slug" in data:
         check_slug_free(Program, data["slug"], exclude_id=program.id)
         program.slug = data["slug"]
+    if "cover_image_id" in data:
+        program.cover_image = resolve_image(data["cover_image_id"], "cover_image_id")
     if "parent_slug" in data:
         _set_parent(program, data["parent_slug"])
     if "lead_profile_slug" in data:
@@ -146,6 +149,7 @@ def admin_list_programs():
     statement = select(Program).options(
         selectinload(Program.themes), selectinload(Program.locations), selectinload(Program.partners),
         selectinload(Program.children), selectinload(Program.parent), selectinload(Program.lead),
+        selectinload(Program.cover_image),
     )
     if args.get("status"):
         statement = statement.where(Program.publication_status == args["status"])

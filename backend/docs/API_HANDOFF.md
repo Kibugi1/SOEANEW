@@ -407,7 +407,7 @@ Fields: `title`, `slug` (generated from `short_name` or the title), `short_name`
 `in_development`), `is_featured`, `start_date`, `end_date`, `sort_order`, `parent_slug`,
 `lead_profile_slug`, `contact_email`, `cta_label`, `cta_url` (http/https or a site path like
 `/partner-with-us`), `cta_pending`, `theme_slugs`, `primary_theme_slug` (one of the themes),
-`location_slugs`, `partner_slugs`, `publication_status`.
+`location_slugs`, `partner_slugs`, `cover_image_id` (an uploaded image, or `null`), `publication_status`.
 
 `in_development` is displayed as **"Concept in development"**. Publishing rules match partners.
 A call to action needs a link unless it is marked pending. A program cannot sit under itself or
@@ -415,7 +415,9 @@ one of its own sub-programs.
 
 The public program endpoints now also return `parent` (list and detail) and, on the detail,
 `lead` (only while that profile is published), `contact_email`, `cta`
-(`{"label", "url", "pending"}`; `url` is `null` while pending) and `sub_programs`.
+(`{"label", "url", "pending"}`; `url` is `null` while pending), `sub_programs` and `partners`
+(published partners only, with logos). List and detail both include `cover_image`:
+`{"url", "alt_text", "width", "height"}` or `null` (alt text falls back to the title).
 
 **Loading partnership areas:** `flask --app run.py seed-partnership-areas` adds the seven areas used on
 the Partner With Us journey (same slugs as enquiry `interests`), published. It only adds

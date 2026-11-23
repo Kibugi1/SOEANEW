@@ -294,3 +294,58 @@ def test_seed_jeet_reports_what_it_could_not_link(app):
         assert any("chika-atueyi" in n for n in notes)
         assert any("nairobi" in n for n in notes)
         _drop_all()
+
+
+def _upload(client, token, tmp_path, kind="image"):
+    import io
+
+    from flask import current_app
+    from PIL import Image
+
+    current_app.config["UPLOAD_DIR"] = str(tmp_path)
+    if kind == "image":
+        buffer = io.BytesIO()
+        Image.new("RGB", (400, 240), (40, 120, 60)).save(buffer, "JPEG")
+        data = {"file": (io.BytesIO(buffer.getvalue()), "cover.jpg"), "alt_text": "Champions at a training session"}
+    else:
+        data = {"file": (io.BytesIO(b"%PDF-1.4\n%%EOF\n"), "brief.pdf")}
+    response = client.post("/api/v1/admin/media", data=data, headers=auth(token), content_type="multipart/form-data")
+    assert response.status_code == 201, response.get_json()
+    return response.get_json()["data"]["id"]
+
+
+def test_cover_image_set_shown_and_removed(program_client, admin, tmp_path):
+    cover = _upload(program_client, admin, tmp_path)
+    ceci = db.session.query(Program).filter_by(slug="ceci").one()
+
+    response = program_client.patch(f"{BASE}/{ceci.id}", json={"cover_image_id": cover}, headers=auth(admin))
+    assert response.status_code == 200
+    assert response.get_json()["data"]["cover_image"]["id"] == cover
+
+    listed = program_client.get("/api/v1/programs").get_json()["data"][0]
+    assert listed["cover_image"]["alt_text"] == "Champions at a training session"
+    detail = program_client.get("/api/v1/programs/ceci").get_json()["data"]
+    assert detail["cover_image"]["url"].endswith(".jpg") or detail["cover_image"]["url"]
+
+    removed = program_client.patch(f"{BASE}/{ceci.id}", json={"cover_image_id": None}, headers=auth(admin))
+    assert removed.get_json()["data"]["cover_image"] is None
+    assert program_client.get("/api/v1/programs/ceci").get_json()["data"]["cover_image"] is None
+
+
+def test_document_cannot_be_a_cover(program_client, admin, tmp_path):
+    document = _upload(program_client, admin, tmp_path, kind="document")
+    ceci = db.session.query(Program).filter_by(slug="ceci").one()
+    response = program_client.patch(f"{BASE}/{ceci.id}", json={"cover_image_id": document}, headers=auth(admin))
+    assert response.status_code == 400
+    assert "cover_image_id" in response.get_json()["error"]["details"]
+
+
+def test_public_detail_lists_only_published_partners(program_client, admin):
+    db.session.add(Partner(slug="draft-co", name="Draft Co", partner_type="business", publication_status="draft"))
+    db.session.commit()
+    ceci = db.session.query(Program).filter_by(slug="ceci").one()
+    program_client.patch(f"{BASE}/{ceci.id}", json={"partner_slugs": ["mr-green", "draft-co"]}, headers=auth(admin))
+
+    partners = program_client.get("/api/v1/programs/ceci").get_json()["data"]["partners"]
+    assert [p["slug"] for p in partners] == ["mr-green"]
+    assert {"name", "logo", "website_url"} <= set(partners[0])

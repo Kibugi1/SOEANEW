@@ -3,6 +3,8 @@ import Footer from "@/components/layout/Footer";
 import ProgramsHero from "@/components/programs/ProgramsHero";
 import FeaturedProgram from "@/components/programs/FeaturedProgram";
 import ProgramsCTA from "@/components/programs/ProgramsCTA";
+import MorePrograms from "@/components/programs/MorePrograms";
+import { Suspense } from "react";
 import { getPublishedProgrammes } from "@/data/programs";
 
 export default function ProgramsPage() {
@@ -18,6 +20,10 @@ export default function ProgramsPage() {
         {featuredProgramme && (
           <FeaturedProgram programme={featuredProgramme} />
         )}
+        {/* Programs published from the dashboard; streams in, never blocks the page. */}
+        <Suspense fallback={null}>
+          <MorePrograms />
+        </Suspense>
         <ProgramsCTA />
       </main>
       <Footer />

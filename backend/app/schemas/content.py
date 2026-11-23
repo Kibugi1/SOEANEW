@@ -92,6 +92,17 @@ def _program_lead(program):
     }
 
 
+def _program_partners(program):
+    """Published partners on this program, in their list order, with logos."""
+    from .partner import PartnerListSchema
+
+    partners = sorted(
+        (p for p in program.partners if p.publication_status == "published"),
+        key=lambda p: (p.sort_order, p.name),
+    )
+    return PartnerListSchema(many=True).dump(partners)
+
+
 def _program_cta(program):
     if not program.cta_label:
         return None
@@ -111,6 +122,7 @@ class ProgramListSchema(Schema):
     locations = fields.Function(lambda program: [location_ref(l) for l in published(program.locations)])
     url = fields.Function(lambda program: f"{PROGRAM_URL_PREFIX}/{program.slug}")
     parent = fields.Function(_published_parent_program)
+    cover_image = fields.Function(lambda program: public_image(program.cover_image, fallback_alt=program.title))
 
 
 class ProgramDetailSchema(ProgramListSchema):
@@ -123,6 +135,7 @@ class ProgramDetailSchema(ProgramListSchema):
     sub_programs = fields.Function(
         lambda program: [program_ref(child) for child in published(program.children)]
     )
+    partners = fields.Function(_program_partners)
 
 
 # ---------- query-string schemas ----------
