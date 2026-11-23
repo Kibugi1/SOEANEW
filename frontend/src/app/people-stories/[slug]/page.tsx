@@ -7,7 +7,7 @@ import Footer from "@/components/layout/Footer";
 import VolunteerProfile from "@/components/people/VolunteerProfile";
 import { getVolunteerBySlug, teamFunctions, volunteers } from "@/data/people";
 import { programmes } from "@/data/programs";
-import { getStoriesForPerson } from "@/data/stories";
+import { getStoriesForProfile } from "@/lib/content/stories";
 
 export function generateStaticParams() {
   return volunteers.map((person) => ({ slug: person.slug }));
@@ -54,7 +54,7 @@ async function VolunteerProfileContent({ params }: { params: Params }) {
       person={person}
       functionName={functionName}
       programmes={supported}
-      stories={getStoriesForPerson(person.id, person.programmeIds)}
+      stories={await getStoriesForProfile(person.slug, person.id, person.programmeIds)}
     />
   );
 }
