@@ -1,5 +1,4 @@
 import Image from "next/image";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import Navbar from "@/components/navigation/Navbar";
 import LinkButton from "@/components/ui/LinkButton";
 
@@ -306,10 +305,12 @@ export default function WhoWeArePage() {
                     bgcolor: "#E5E5DD",
                   }}
                 >
-                  {/* Feedback 19 Nov 2026, §3.1: replace the standing/group photo. */}
-                  <ImagePlaceholder
-                    needed="Stephanie Ndiritu facilitating a community meeting inside a church in Mathare (an action photo, not a standing group)."
-                    source="CECI Next Steps / community baseline assessment / Mathare imagery folders, including the images shared for the video editing work"
+                  <Image
+                    src="/assets/images/whoweare/stephmathare.jpg"
+                    alt="Stephanie Ndiritu of SOEA facilitating a community meeting in Mathare"
+                    fill
+                    sizes="(max-width: 900px) 100vw, 58vw"
+                    style={{ objectFit: "cover" }}
                   />
                 </Box>
                 <Typography
