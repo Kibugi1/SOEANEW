@@ -1,0 +1,17 @@
+# /etc/systemd/system/soea-backend.service
+[Unit]
+Description=SOEA API (gunicorn)
+After=network.target postgresql.service redis-server.service
+
+[Service]
+User=soeaweb
+Group=soeaweb
+WorkingDirectory=/srv/soeaweb/SOEANEW/backend
+EnvironmentFile=/srv/soeaweb/backend.env
+# Port 8020: BiYo's API already uses 8010. --timeout leaves room for 25 MB uploads.
+ExecStart=/srv/soeaweb/SOEANEW/backend/.venv/bin/gunicorn --workers 3 --timeout 120 --bind 127.0.0.1:8020 --access-logfile - wsgi:app
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
