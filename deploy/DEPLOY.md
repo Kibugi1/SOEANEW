@@ -187,23 +187,31 @@ BiYo down.
 
 ## 9. Switch sq1ecoafrica.org to the new site
 
-1. The old site's nginx file is `/etc/nginx/sites-available/soea` (the new one is
-   `soeaweb`). Keep a copy:
-   ```bash
-   sudo cp /etc/nginx/sites-available/soea /srv/soeaweb/old-site-nginx.conf.bak
-   ```
-2. In the old file, remove `sq1ecoafrica.org` and `www.sq1ecoafrica.org` from its
-   `server_name` lines. Leave the file otherwise as it is, so you can switch back.
-3. In `/etc/nginx/sites-available/soeaweb`, change the website block's
-   `server_name new.sq1ecoafrica.org;` to
-   `server_name sq1ecoafrica.org www.sq1ecoafrica.org new.sq1ecoafrica.org;`
-4. Apply it and get the certificate:
-   ```bash
-   sudo nginx -t && sudo systemctl reload nginx
-   sudo certbot --nginx -d sq1ecoafrica.org -d www.sq1ecoafrica.org
-   ```
+The old static site is `/etc/nginx/sites-available/soea` (only `sq1ecoafrica.org` and
+`www.`). It is switched off, not deleted, so you can switch back.
 
-**To switch back:** restore the old file from the `.bak`, undo step 3, then run
+1. Grow the existing `sq1ecoafrica.org` certificate to cover all four names (the old
+   site keeps working meanwhile):
+   ```bash
+   sudo certbot certonly --nginx --cert-name sq1ecoafrica.org --expand \
+     -d sq1ecoafrica.org -d www.sq1ecoafrica.org -d new.sq1ecoafrica.org -d api.sq1ecoafrica.org \
+     --deploy-hook "systemctl reload nginx"
+   ```
+2. Keep copies, install the live config, switch the old site off, check, apply:
+   ```bash
+   sudo cp /etc/nginx/sites-available/soea    /srv/soeaweb/old-site-nginx.conf.bak
+   sudo cp /etc/nginx/sites-available/soeaweb /srv/soeaweb/staging-nginx.conf.bak
+   sudo cp /srv/soeaweb/SOEANEW/deploy/nginx-soea-live.conf /etc/nginx/sites-available/soeaweb
+   sudo rm /etc/nginx/sites-enabled/soea
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+   If `nginx -t` fails, nothing has changed yet: put things back with
+   `sudo ln -s /etc/nginx/sites-available/soea /etc/nginx/sites-enabled/soea` and
+   `sudo cp /srv/soeaweb/staging-nginx.conf.bak /etc/nginx/sites-available/soeaweb`.
+3. The staging certificate is no longer used: `sudo certbot delete --cert-name api.sq1ecoafrica.org`
+
+**To switch back later:** restore the two `.bak` files to `sites-available/`, run
+`sudo ln -s /etc/nginx/sites-available/soea /etc/nginx/sites-enabled/soea`, then
 `sudo nginx -t && sudo systemctl reload nginx`.
 
 ## 10. Backups and updates
