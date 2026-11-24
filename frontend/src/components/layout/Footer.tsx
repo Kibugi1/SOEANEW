@@ -6,6 +6,7 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
+import SocialLinks from "@/components/ui/SocialLinks";
 
 const exploreLinks = [
     ["Who We Are", "/who-we-are"],
@@ -156,6 +157,10 @@ export default function Footer() {
                                 Nairobi, Kenya
                             </Typography>
                         </Stack>
+
+                        <Box sx={{ mt: 2.5 }}>
+                            <SocialLinks size={38} />
+                        </Box>
                     </Grid>
                 </Grid>
 

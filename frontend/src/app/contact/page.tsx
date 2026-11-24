@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import Journey from "@/components/journey/Journey";
 import SectionHeader from "@/components/ui/SectionHeader";
 import LinkButton from "@/components/ui/LinkButton";
+import { SOCIAL, whatsappHref } from "@/components/ui/SocialLinks";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -24,7 +25,8 @@ const contacts = [
     note: "Rozalia Wangui Karanja, Founder & Executive Lead",
     href: "mailto:r.karanja@sq1ecoafrica.org",
   },
-  { label: "WhatsApp", value: "+254 704 831 331", href: "https://wa.me/254704831331" },
+  { label: "WhatsApp", value: SOCIAL.whatsappDisplay, href: whatsappHref },
+  { label: "LinkedIn", value: "Square One Eco Africa", href: SOCIAL.linkedin },
   { label: "Location", value: "Nairobi, Kenya" },
 ];
 
