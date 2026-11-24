@@ -415,6 +415,18 @@ export default function JourneyFlow({ config, initialAnswers = {} }: JourneyFlow
                     }
                     label={<Typography sx={{ fontSize: "0.9rem", lineHeight: 1.6 }}>{config.review.consentLabel}</Typography>}
                   />
+                  <Typography sx={{ mt: 1, ml: 4, fontSize: "0.82rem", lineHeight: 1.6, color: "text.secondary" }}>
+                    Read how we handle your details in our{" "}
+                    <Box
+                      component={Link}
+                      href="/privacy"
+                      target="_blank"
+                      sx={{ color: "primary.dark", fontWeight: 600, textDecoration: "underline" }}
+                    >
+                      privacy notice
+                    </Box>
+                    {" "}(opens in a new tab, so you won&rsquo;t lose your answers).
+                  </Typography>
                   {consentError && (
                     <Typography role="alert" sx={{ mt: 1, color: "error.main", fontSize: "0.85rem" }}>
                       Please confirm you agree before sending.
