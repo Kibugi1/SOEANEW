@@ -7,6 +7,7 @@ import {
     Typography,
 } from "@mui/material";
 import SocialLinks from "@/components/ui/SocialLinks";
+import LinkButton from "@/components/ui/LinkButton";
 
 const exploreLinks = [
     ["Who We Are", "/who-we-are"],
@@ -120,6 +121,15 @@ export default function Footer() {
                             Co-creating practical climate solutions for transformational
                             impact.
                         </Typography>
+
+                        <Box sx={{ mt: 3 }}>
+                            <Typography sx={{ fontSize: 13, color: "#1A1A1A", fontWeight: 600, mb: 1.25 }}>
+                                Updates on programs, stories and events, straight to your inbox.
+                            </Typography>
+                            <LinkButton href="/stay-connected" variant="contained" disableElevation sx={{ borderRadius: 0, px: 3 }}>
+                                Subscribe to updates
+                            </LinkButton>
+                        </Box>
                     </Grid>
 
                     {/* Explore */}

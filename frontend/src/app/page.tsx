@@ -23,6 +23,8 @@ import {
 } from "@mui/material";
 import Navbar from "@/components/navigation/Navbar";
 import CinematicHero from "@/components/home/CinematicHero";
+import EventFeature from "@/components/events/EventCountdown";
+import { ceciWhatNext } from "@/data/events";
 
 import Footer from "@/components/layout/Footer";
 
@@ -54,6 +56,9 @@ export default function Home() {
       <Box component="main">
         {/* Cinematic Hero */}
         <CinematicHero />
+
+        {/* CECI: What Next? countdown. Shows until the event ends, then disappears. */}
+        <EventFeature event={ceciWhatNext} />
 
         {/* Introduction */}
         <PeopleIntroduction />
