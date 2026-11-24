@@ -153,14 +153,17 @@ Logs: `sudo journalctl -u soea-backend -f`
 
 ## 7. Build and start the website
 
+`deploy.sh` builds the site into `/srv/soeaweb/releases/` and points
+`/srv/soeaweb/frontend-current` at it. It restarts the two services itself, so first let
+`soeaweb` do that (and nothing else):
+
 ```bash
-cd /srv/soeaweb/SOEANEW/frontend
-sudo -u soeaweb cp /srv/soeaweb/frontend.env .env.production.local
-sudo -u soeaweb npm ci --no-audit --no-fund
-sudo -u soeaweb npm run build                # a few minutes
+echo 'soeaweb ALL=(root) NOPASSWD: /usr/bin/systemctl restart soea-backend, /usr/bin/systemctl restart soea-frontend' | sudo tee /etc/sudoers.d/soeaweb
+sudo chmod 440 /etc/sudoers.d/soeaweb && sudo visudo -c
 sudo cp /srv/soeaweb/SOEANEW/deploy/soea-frontend.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now soea-frontend
+sudo systemctl enable soea-frontend
+sudo -u soeaweb /srv/soeaweb/SOEANEW/deploy/deploy.sh     # a few minutes
 curl -sI http://127.0.0.1:3020 | head -1      # HTTP/1.1 200 OK
 ```
 
@@ -225,20 +228,63 @@ sudo -u soeaweb crontab -e
 Copy `/srv/soeaweb/backups` off the VPS now and then (`scp` to your laptop). A backup
 that only lives on the server is lost along with the server.
 
-To let `deploy.sh` restart the services (once):
-
-```bash
-echo 'soeaweb ALL=(root) NOPASSWD: /usr/bin/systemctl restart soea-backend, /usr/bin/systemctl restart soea-frontend' | sudo tee /etc/sudoers.d/soeaweb
-```
-
-**Every update after that:** push to `main`, then on the VPS:
+**Updates:** merge to `main`, then either press **Run workflow** in
+GitHub (next section) or, on the VPS:
 
 ```bash
 sudo -u soeaweb /srv/soeaweb/SOEANEW/deploy/deploy.sh
 ```
 
-This pulls the code, installs requirements, applies migrations, rebuilds the site and
-restarts both services.
+This pulls the code, installs requirements, applies migrations and restarts the API, then
+builds the website in a new folder under `/srv/soeaweb/releases/` while the current one
+keeps serving. Only when the build succeeds does `/srv/soeaweb/frontend-current` switch
+to it, so a failed build never touches the live site. The last 3 builds are kept.
+
+**Roll back the website** to an earlier build:
+
+```bash
+ls -1t /srv/soeaweb/releases/            # newest first
+sudo -u soeaweb ln -sfn /srv/soeaweb/releases/OLDER_FOLDER/frontend /srv/soeaweb/frontend-current
+sudo systemctl restart soea-frontend
+```
+
+## 11. Automatic checks and deploys (GitHub Actions)
+
+- **CI** (`.github/workflows/ci.yml`) runs on every push and pull request: backend tests,
+  then the website's type check, lint and build.
+- **Deploy** (`.github/workflows/deploy.yml`) runs only when someone presses
+  **Actions → Deploy → Run workflow** on `main`. It runs CI again, then connects to the
+  VPS and runs `deploy.sh`, then checks the live site. That button is the approval step.
+
+The key GitHub uses can only run `deploy.sh`: the VPS ignores any other command sent
+with it, and it can't open a shell or forward ports.
+
+**One-time setup.** On your laptop, make the key:
+
+```bash
+ssh-keygen -t ed25519 -N "" -C "github-actions-deploy" -f ~/soea-gh-deploy
+cat ~/soea-gh-deploy.pub
+```
+
+On the VPS, allow it to run `deploy.sh` and nothing else (paste the `.pub` line where shown):
+
+```bash
+echo 'restrict,command="/srv/soeaweb/SOEANEW/deploy/deploy.sh" PASTE_PUB_KEY_HERE' | sudo -u soeaweb tee -a /srv/soeaweb/.ssh/authorized_keys
+sudo chmod 600 /srv/soeaweb/.ssh/authorized_keys
+```
+
+In GitHub, **SOEANEW → Settings → Secrets and variables → Actions → New repository
+secret**, add:
+
+| Name | Value |
+| --- | --- |
+| `VPS_HOST` | `179.198.203.133` |
+| `VPS_SSH_KEY` | everything in `~/soea-gh-deploy` (the file **without** `.pub`) |
+| `VPS_KNOWN_HOSTS` | the output of `ssh-keyscan -t ed25519 179.198.203.133` |
+
+Then delete the key files from your laptop: `rm ~/soea-gh-deploy ~/soea-gh-deploy.pub`.
+To revoke GitHub's access at any time, delete its line from
+`/srv/soeaweb/.ssh/authorized_keys`.
 
 ## After launch
 

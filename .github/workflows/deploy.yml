@@ -1,0 +1,56 @@
+# Deploys main to the VPS. Started by hand: Actions → Deploy → Run workflow (that click is the
+# approval). Runs the full CI first and only deploys if it passes.
+#
+# Repository secrets (Settings → Secrets and variables → Actions):
+#   VPS_HOST         179.198.203.133
+#   VPS_SSH_KEY      private half of the deploy key (deploy/DEPLOY.md, "Automatic deploys")
+#   VPS_KNOWN_HOSTS  output of: ssh-keyscan -t ed25519 179.198.203.133
+#
+# On the VPS that key can only run deploy/deploy.sh (forced command), nothing else.
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false # never stop a deploy halfway
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy to sq1ecoafrica.org
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Set up SSH
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Run deploy.sh on the VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        # The server ignores the command sent and always runs deploy.sh.
+        run: ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o ServerAliveInterval=30 "soeaweb@$VPS_HOST" deploy
+
+      - name: Check the live site
+        run: |
+          curl -fsS https://api.sq1ecoafrica.org/api/v1/health
+          curl -fsS -o /dev/null -w "website: %{http_code}\n" https://sq1ecoafrica.org/
+
+      - name: Remove the key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
