@@ -145,7 +145,7 @@ export default function CinematicHero() {
                             width: "100%",
                         }}
                     >
-                        <Box sx={{ width: "100%", maxWidth: 900 }}>
+                        <Box sx={{ width: "100%", maxWidth: 900, mx: "auto", textAlign: "center" }}>
                             <Typography
                                 sx={{
                                     mb: 3,
@@ -163,20 +163,38 @@ export default function CinematicHero() {
                                 component="h1"
                                 sx={{
                                     maxWidth: 900,
+                                    mx: "auto",
                                     color: "#FFFFFF",
                                     fontFamily: '"Cormorant Garamond", serif',
                                     fontSize: "clamp(3.25rem, 6.4vw, 6.5rem)",
-                                    fontWeight: 600,
+                                    fontWeight: 700,
                                     lineHeight: 0.88,
                                     letterSpacing: "-0.045em",
                                     textTransform: "uppercase",
                                 }}
                             >
-                                We are
-                                <Box component="span" sx={{ display: "block", fontStyle: "italic" }}>
+                                {/* A quiet lead-in, so the name carries the weight. */}
+                                <Box
+                                    component="span"
+                                    sx={{
+                                        display: "block",
+                                        mb: { xs: 1.5, md: 2 },
+                                        fontSize: "0.42em",
+                                        fontWeight: 400,
+                                        fontStyle: "italic",
+                                        letterSpacing: "0.04em",
+                                        textTransform: "none",
+                                        color: "rgba(255, 255, 255, 0.82)",
+                                    }}
+                                >
+                                    We are
+                                </Box>
+                                <Box component="span" sx={{ display: "block" }}>
                                     Square One
                                 </Box>
-                                Eco Africa.
+                                <Box component="span" sx={{ display: "block", color: "#E0C56E" }}>
+                                    Eco Africa.
+                                </Box>
                             </Typography>
                         </Box>
                     </motion.div>

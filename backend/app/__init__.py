@@ -42,11 +42,28 @@ def create_app(config_name: str | None = None) -> Flask:
 
     register_cli(app)
 
+    _register_media_route(app)
+
     @app.get("/")
     def root():
         return {"name": "SOEA API", "version": "v1", "health": "/api/v1/health"}
 
     return app
+
+
+def _register_media_route(app: Flask) -> None:
+    """Serve uploaded files. In production a web server or CDN should do this instead."""
+    from flask import send_from_directory
+
+    @app.get(f"{app.config['MEDIA_URL_PATH']}/<path:key>")
+    def media_file(key):
+        # send_from_directory refuses paths that escape UPLOAD_DIR.
+        response = send_from_directory(app.config["UPLOAD_DIR"], key, max_age=60 * 60 * 24 * 30)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        if response.mimetype == "application/pdf":
+            # Let browsers display a PDF without letting it run scripts in our origin.
+            response.headers["Content-Security-Policy"] = "sandbox"
+        return response
 
 
 def _register_request_hooks(app: Flask) -> None:

@@ -45,6 +45,12 @@ export interface Story {
   socialUrl: string | null;
   /** Set only after consent and privacy review. */
   consentReviewed: boolean;
+  /** Full story page, when the story comes from the CMS (API). */
+  href?: string | null;
+  /** "event" for event records; stories otherwise. */
+  kind?: "story" | "event";
+  /** Cover photo, when the story has one. */
+  cover?: StoryMedia | null;
 }
 
 export const storiesIntro = {

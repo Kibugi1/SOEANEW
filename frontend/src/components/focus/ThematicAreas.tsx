@@ -4,7 +4,7 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowOutwardRoundedIcon from "@mui/icons-material/ArrowOutwardRounded";
-import { focusAreas } from "@/data/focusAreas";
+import { themesIntro, focusAreas } from "@/data/focusAreas";
 
 export default function ThematicAreas() {
   return (
@@ -45,20 +45,19 @@ export default function ThematicAreas() {
                 maxWidth: 650,
               }}
             >
-              Six themes. Interconnected challenges.
+              {themesIntro.title}
             </Typography>
           </Box>
 
           <Typography
             sx={{
-              maxWidth: 390,
+              maxWidth: 520,
               color: "#5F5F55",
               lineHeight: 1.8,
               fontSize: "0.95rem",
             }}
           >
-            Explore the areas through which we work with communities,
-            practitioners and partners.
+            {themesIntro.description}
           </Typography>
         </Box>
 

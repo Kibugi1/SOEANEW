@@ -4,7 +4,7 @@ from marshmallow import Schema, fields, validate
 
 from app.models.constants import PARTNER_TYPES
 
-from .common import PaginationQuerySchema, safe_http_url
+from .common import PaginationQuerySchema, public_image, safe_http_url
 from .urls import PARTNER_URL_PREFIX
 
 
@@ -25,6 +25,7 @@ class PartnerListSchema(Schema):
     partner_type = fields.String()
     summary = fields.String(allow_none=True)
     website_url = fields.Function(lambda partner: safe_http_url(partner.website_url))
+    logo = fields.Function(lambda partner: public_image(partner.logo, fallback_alt=f"{partner.name} logo"))
     areas = fields.Function(
         lambda partner: PartnershipAreaSchema(many=True).dump(
             [

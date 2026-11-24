@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy import CheckConstraint, Column, ForeignKey, Index, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -80,6 +82,19 @@ class Partner(UUIDPrimaryKeyMixin, TimestampMixin, db.Model):
     website_url: Mapped[str | None] = mapped_column(String(500))  # validated as http(s) when serialized
     sort_order: Mapped[int] = mapped_column(default=0)
     publication_status: Mapped[str] = mapped_column(String(20), default="draft")
+    logo_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("media_asset.id", ondelete="SET NULL"), nullable=True
+    )
 
+    logo = relationship("MediaAsset")
     # WARNING: unfiltered. Public code must use app.models.queries.
     areas = relationship("PartnershipArea", secondary=partner_areas, order_by="PartnershipArea.sort_order")
+    # passive_deletes="all": the ORM must not quietly remove program links, so the
+    # database's RESTRICT rule stops a partner in use from being deleted (archive it).
+    programs = relationship(
+        "Program",
+        secondary=program_partners,
+        back_populates="partners",
+        order_by="Program.sort_order",
+        passive_deletes="all",
+    )

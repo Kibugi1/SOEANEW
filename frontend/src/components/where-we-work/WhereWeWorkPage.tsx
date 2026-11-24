@@ -1,4 +1,7 @@
 import Image from "next/image";
+import GeoJourney from "@/components/where-we-work/GeoJourney";
+import { focusCounties } from "@/data/counties";
+import { getJourneyMapData } from "@/lib/geo/journeyMap";
 import Link from "next/link";
 import ArrowOutwardRounded from "@mui/icons-material/ArrowOutwardRounded";
 import PlaceOutlined from "@mui/icons-material/PlaceOutlined";
@@ -141,6 +144,9 @@ export default function WhereWeWorkPage() {
         </Container>
       </Box>
 
+      {/* Interactive map: World → Africa → Kenya → Counties (feedback 19 Nov 2026, §10) */}
+      <GeoJourney map={getJourneyMapData()} counties={focusCounties} />
+
       {/* Nairobi coordination hub */}
       <Box
         component="section"
@@ -165,7 +171,7 @@ export default function WhereWeWorkPage() {
             >
               <Image
                 src={content.coordinationHub.image}
-                alt="SOEA community programme planning in Nairobi"
+                alt={content.coordinationHub.imageAlt}
                 fill
                 sizes="(max-width: 900px) 100vw, 50vw"
                 style={{ objectFit: "cover" }}
@@ -240,9 +246,9 @@ export default function WhereWeWorkPage() {
                   mt: 1,
                 }}
               >
-                <Eyebrow>Confirmed community programme locations</Eyebrow>
+                <Eyebrow>Confirmed community program locations</Eyebrow>
                 <Typography sx={{ color: muted, mt: 1, lineHeight: 1.8 }}>
-                  CECI's initial community engagement and programme activities
+                  CECI&rsquo;s initial community engagement and program activities
                   are centred in Dandora and Mathare.
                 </Typography>
               </Box>
@@ -269,7 +275,7 @@ export default function WhereWeWorkPage() {
               Working alongside communities in Dandora and Mathare.
             </Typography>
             <Typography sx={{ color: muted, lineHeight: 1.9 }}>
-              These locations are central to CECI's first community pathway,
+              These locations are central to WP-LIFT, CECI&rsquo;s first flagship project,
               which begins with waste pickers and practical circular economy
               learning.
             </Typography>
@@ -292,13 +298,29 @@ export default function WhereWeWorkPage() {
                     bgcolor: "#F3F3EC",
                   }}
                 >
-                  <Image
-                    src={location.image}
-                    alt={`Community engagement in ${location.name}`}
-                    fill
-                    sizes="(max-width: 900px) 100vw, 50vw"
-                    style={{ objectFit: "cover" }}
-                  />
+                  {location.media.video ? (
+                    <Box
+                      component="video"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      aria-label={location.media.alt}
+                      sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                    >
+                      {/* H.264 QuickTime file; served as MP4 so Chrome and Firefox will play it. */}
+                      <source src={location.media.src} type="video/mp4" />
+                    </Box>
+                  ) : (
+                    <Image
+                      src={location.media.src}
+                      alt={location.media.alt}
+                      fill
+                      sizes="(max-width: 900px) 100vw, 50vw"
+                      style={{ objectFit: "cover" }}
+                    />
+                  )}
                   <Box
                     sx={{
                       position: "absolute",
@@ -381,7 +403,7 @@ export default function WhereWeWorkPage() {
                   color: ink,
                 }}
               >
-                Beyond the urban context.
+                Beyond Nairobi County.
               </Typography>
               <Typography sx={{ color: muted, lineHeight: 1.9 }}>
                 {content.geographicFocusDescription}
@@ -399,7 +421,12 @@ export default function WhereWeWorkPage() {
               {content.geographicFocus.map((county, index) => (
                 <Box
                   key={county}
+                  component="a"
+                  href={`/where-we-work/${county.toLowerCase().replace(/\s+/g, "-")}`}
                   sx={{
+                    textDecoration: "none",
+                    transition: "background-color 200ms ease",
+                    "&:hover": { bgcolor: "#F5F3E8" },
                     bgcolor: "#FFFFFF",
                     minHeight: 125,
                     p: { xs: 2, md: 2.5 },

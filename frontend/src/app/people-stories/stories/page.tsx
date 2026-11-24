@@ -12,14 +12,15 @@ import ConnectCTA from "@/components/people/ConnectCTA";
 import SectionHeader from "@/components/ui/SectionHeader";
 import LinkButton from "@/components/ui/LinkButton";
 import { connectCopy } from "@/data/people";
-import { championsIntro, featuredResource, stories, storiesIntro } from "@/data/stories";
+import { championsIntro, featuredResource, storiesIntro } from "@/data/stories";
+import { getPublicStories } from "@/lib/content/stories";
 
 export const metadata: Metadata = {
   title: "Stories",
   description: storiesIntro.intro,
 };
 
-export default function StoriesPage() {
+export default async function StoriesPage() {
   return (
     <>
       <Navbar />
@@ -60,7 +61,7 @@ export default function StoriesPage() {
                 </Box>
               </Grid>
               <Grid size={{ xs: 12, md: 8 }}>
-                <StoryTimeline stories={stories} />
+                <StoryTimeline stories={await getPublicStories()} />
               </Grid>
             </Grid>
           </Container>

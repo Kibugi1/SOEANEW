@@ -114,7 +114,18 @@ def send_newsletter_campaign_email(
     message["Subject"] = subject
     message["From"] = config["SMTP_FROM_EMAIL"]
     message["To"] = email
-    message["List-Unsubscribe"] = f"<{unsubscribe_url}>"
+    # Gmail, Outlook and Apple Mail show their own "Unsubscribe" button from these
+    # headers. With List-Unsubscribe-Post the mail app POSTs to our API directly
+    # (one-click, RFC 8058) and the reader never has to open a page.
+    one_click_url = _build_confirmation_url(
+        f"{config['API_PUBLIC_URL'].rstrip('/')}/newsletter-subscriptions/one-click",
+        unsubscribe_token,
+    ) if config.get("API_PUBLIC_URL") else None
+    if one_click_url:
+        message["List-Unsubscribe"] = f"<{one_click_url}>"
+        message["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"
+    else:
+        message["List-Unsubscribe"] = f"<{unsubscribe_url}>"
 
     text_content = (
         f"{body_text.rstrip()}\n\n"

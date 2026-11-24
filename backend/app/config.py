@@ -68,8 +68,11 @@ class BaseConfig:
     SECRET_KEY = os.getenv("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     NEWSLETTER_CONSENT_TEXT_VERSION = os.getenv("NEWSLETTER_CONSENT_TEXT_VERSION", "v1")
-    NEWSLETTER_TOKEN_MAX_AGE = 60 * 60 * 24
+    NEWSLETTER_TOKEN_MAX_AGE = 60 * 60 * 24  # confirmation links
+    NEWSLETTER_UNSUBSCRIBE_TOKEN_MAX_AGE = None  # unsubscribe links never expire
     ADMIN_ACCESS_TOKEN_MAX_AGE = 900
+    # Longest a signed-in session can be kept alive through /auth/refresh.
+    ADMIN_SESSION_MAX_AGE = 12 * 60 * 60
     SMTP_HOST = os.getenv("SMTP_HOST")
     SMTP_PORT = 587
     SMTP_USERNAME = os.getenv("SMTP_USERNAME")
@@ -77,7 +80,30 @@ class BaseConfig:
     SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL")
     NEWSLETTER_CONFIRMATION_URL = os.getenv("NEWSLETTER_CONFIRMATION_URL")
     NEWSLETTER_UNSUBSCRIBE_URL = os.getenv("NEWSLETTER_UNSUBSCRIBE_URL")
+    # Public address of this API, for the one-click unsubscribe link that Gmail and
+    # other mail apps POST to (RFC 8058). Must be https in production.
+    API_PUBLIC_URL = os.getenv("API_PUBLIC_URL", "http://localhost:5000/api/v1")
     RATELIMIT_STORAGE_URI = os.getenv("RATELIMIT_STORAGE_URI", "memory://")
+
+    # Where website messages are announced by email. Every message is stored in the
+    # admin inbox whether or not these are set; an empty value skips the email.
+    INBOX_PARTNERSHIPS_EMAIL = os.getenv("INBOX_PARTNERSHIPS_EMAIL")
+    INBOX_VOLUNTEERS_EMAIL = os.getenv("INBOX_VOLUNTEERS_EMAIL")
+    INBOX_INFO_EMAIL = os.getenv("INBOX_INFO_EMAIL")
+    # Base URL of the admin dashboard, used for links in notification emails.
+    ADMIN_DASHBOARD_URL = os.getenv("ADMIN_DASHBOARD_URL", "http://localhost:3000/admin")
+
+    # Uploaded files. The API serves them from MEDIA_URL_PATH in development; in
+    # production put a web server or CDN in front and set MEDIA_BASE_URL to it.
+    UPLOAD_DIR = os.getenv("UPLOAD_DIR", str(BASE_DIR / "instance" / "uploads"))
+    MEDIA_URL_PATH = "/media"
+    MEDIA_BASE_URL = os.getenv("MEDIA_BASE_URL", "http://localhost:5000/media")
+    MAX_IMAGE_BYTES = 10 * 1024 * 1024
+    MAX_DOCUMENT_BYTES = 25 * 1024 * 1024
+    # Longest side of a stored image; larger photos are scaled down on upload.
+    MAX_IMAGE_DIMENSION = 2400
+    # Requests above this are refused before they are read (largest file + form overhead).
+    MAX_CONTENT_LENGTH = 26 * 1024 * 1024
 
 
 class DevelopmentConfig(BaseConfig):
@@ -91,6 +117,7 @@ class TestingConfig(BaseConfig):
     TESTING = True
     SECRET_KEY = "test-only-not-a-secret"
     SQLALCHEMY_DATABASE_URI = "sqlite://"  # in-memory; never touches real data
+    MEDIA_BASE_URL = "http://testserver/media"
     CORS_ORIGINS = ["http://localhost:3000"]
 
 

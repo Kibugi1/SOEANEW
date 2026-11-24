@@ -10,9 +10,17 @@ import BackLink from "@/components/people/BackLink";
 import PageIntro from "@/components/ui/PageIntro";
 
 export const metadata: Metadata = {
-  title: "CECI Phase 1 Partnerships",
-  description: "Help shape the first Community Champions curriculum for waste pickers in Dandora and Mathare.",
+  title: "WP-LIFT: Curriculum Co-Design & Partnerships | Under CECI",
+  description:
+    "Help co-design the WP-LIFT curriculum with waste pickers in Dandora and Mathare, under the Community Environmental Champions Initiative (CECI).",
 };
+
+/**
+ * Accent per interest area (feedback 19 Nov 2026, §9). The SOEA logo file is greyscale,
+ * so these are shades of the site's brand palette (olive, earth, gold); swap in the
+ * official brand colors once confirmed.
+ */
+const AREA_COLORS = ["#83834B", "#504624", "#D9AF3F", "#6F703E", "#A8A658", "#B8862B", "#3F4A2A"];
 
 /** docs/consolidated-guide.pdf §05B. */
 const areas = [
@@ -31,19 +39,55 @@ export default function CeciPartnershipsPage() {
       <Navbar />
       <main>
         <PageIntro
-          before={<BackLink href="/programs/ceci">CECI</BackLink>}
-          eyebrow="05B / CECI: Phase 1 partnerships"
-          title="Help shape the first Community Champions curriculum"
-          intro="Current focus: October 2026 – March 2027. We are bringing together partners to co-develop a practical training curriculum for waste pickers and environmental workers in Dandora and Mathare."
+          before={<BackLink href="/programs/ceci">Community Environmental Champions Initiative (CECI)</BackLink>}
+          eyebrow="WP-LIFT · Under CECI"
+          title="WP-LIFT: Curriculum Co-Design & Partnerships"
+          intro="We are bringing together partners to co-develop a practical training curriculum with waste pickers in Dandora and Mathare, Nairobi County, as part of WP-LIFT, the first flagship project under the Community Environmental Champions Initiative."
         />
+
+        {/* "Current focus" card linking to the project phases (feedback §9). */}
+        <Container maxWidth="xl" sx={{ pb: { xs: 5, md: 7 } }}>
+          <Box
+            component="a"
+            href="/programs/ceci#wp-lift-journey"
+            sx={{
+              display: "inline-block",
+              bgcolor: "#83834B",
+              color: "#FFFFFF",
+              px: 3,
+              py: 2.5,
+              textDecoration: "none",
+              "&:hover": { bgcolor: "#504624" },
+            }}
+          >
+            <Typography sx={{ fontFamily: '"Space Mono", monospace', fontSize: "0.68rem", letterSpacing: "0.13em", color: "#F6EBC9" }}>
+              CURRENT FOCUS
+            </Typography>
+            <Typography sx={{ fontWeight: 700, fontSize: "1.1rem", mt: 0.5 }}>
+              October 2026 – March 2027: curriculum co-design &amp; partnerships
+            </Typography>
+            <Typography sx={{ fontSize: "0.85rem", mt: 0.5, opacity: 0.9 }}>
+              See the project phases, starting with Phase 0 planning →
+            </Typography>
+          </Box>
+        </Container>
 
         <Box component="section" aria-label="Partnership areas" sx={{ pb: { xs: 8, md: 12 } }}>
           <Container maxWidth="xl">
             <Grid container spacing={3}>
               {areas.map((area, index) => (
                 <Grid key={area.title} size={{ xs: 12, sm: 6, lg: 3 }}>
-                  <Box sx={{ height: "100%", p: 3, border: 1, borderColor: "divider", borderRadius: 1 }}>
-                    <Typography variant="eyebrow" sx={{ color: "primary.dark" }}>
+                  <Box
+                    sx={{
+                      height: "100%",
+                      p: 3,
+                      border: 1,
+                      borderColor: "divider",
+                      borderTop: `5px solid ${AREA_COLORS[index]}`,
+                      borderRadius: 1,
+                    }}
+                  >
+                    <Typography variant="eyebrow" sx={{ color: "primary.dark", fontWeight: 700 }}>
                       {String(index + 1).padStart(2, "0")}
                     </Typography>
                     <Typography variant="h4" component="h2" sx={{ mt: 1, fontSize: "1.5rem" }}>

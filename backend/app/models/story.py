@@ -25,6 +25,10 @@ from .mixins import TimestampMixin, UUIDPrimaryKeyMixin
 # database enums) so the workflow can change with a simple migration.
 STORY_STATUSES = ("DRAFT", "IN_REVIEW", "CHANGES_REQUESTED", "APPROVED", "PUBLISHED", "ARCHIVED")
 CONSENT_STATUSES = ("unreviewed", "not_required", "confirmed", "withdrawn")
+# "story": an update written by a team member. "event": something SOEA hosted, took part
+# in, spoke at on air, or a partner meeting, with the event fields filled in.
+STORY_TYPES = ("story", "event")
+EVENT_ROLES = ("hosted", "participated", "media", "meeting")
 PUBLIC_CONSENT_STATUSES = ("confirmed", "not_required")
 
 # Byline: the public profiles a story is attributed to (many-to-many, ordered).
@@ -70,6 +74,24 @@ story_themes = db.Table(
 )
 
 
+class StoryMedia(db.Model):
+    """A photo in a story's gallery, in order, with an optional caption."""
+
+    __tablename__ = "story_media"
+    __table_args__ = (Index("ix_story_media_media_id", "media_id"),)
+
+    story_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("story.id", ondelete="CASCADE"), primary_key=True)
+    # RESTRICT: an image in a gallery cannot be deleted until it is removed from the gallery.
+    media_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("media_asset.id", ondelete="RESTRICT"), primary_key=True
+    )
+    sort_order: Mapped[int] = mapped_column(default=0)
+    caption: Mapped[str | None] = mapped_column(String(300))
+
+    story = relationship("Story", back_populates="gallery")
+    media = relationship("MediaAsset")
+
+
 class StoryTeamMember(db.Model):
     """The lead / supporting team on a story (content guide: "lead/support team").
 
@@ -101,6 +123,12 @@ class Story(UUIDPrimaryKeyMixin, TimestampMixin, db.Model):
         CheckConstraint(f"status IN {STORY_STATUSES}", name="status"),
         CheckConstraint(f"consent_status IN {CONSENT_STATUSES}", name="consent_status"),
         CheckConstraint("status <> 'PUBLISHED' OR published_at IS NOT NULL", name="published_has_date"),
+        CheckConstraint(f"story_type IN {STORY_TYPES}", name="story_type"),
+        CheckConstraint(f"event_role IS NULL OR event_role IN {EVENT_ROLES}", name="event_role"),
+        CheckConstraint(
+            "event_end_date IS NULL OR activity_date IS NULL OR event_end_date >= activity_date",
+            name="event_date_order",
+        ),
         Index("ix_story_status_published_at", "status", "published_at"),
     )
 
@@ -129,6 +157,33 @@ class Story(UUIDPrimaryKeyMixin, TimestampMixin, db.Model):
     consent_status: Mapped[str] = mapped_column(String(20), default="unreviewed")
     is_confidential: Mapped[bool] = mapped_column(Boolean, default=False)
     review_notes: Mapped[str | None] = mapped_column(Text)  # internal only; never in public schemas
+
+    story_type: Mapped[str] = mapped_column(String(20), default="story", server_default="story")
+    # Event fields (story_type == "event"). activity_date is the (first) day of the event.
+    event_end_date: Mapped[date | None] = mapped_column(Date)
+    venue: Mapped[str | None] = mapped_column(String(200))
+    organiser: Mapped[str | None] = mapped_column(String(300))
+    event_role: Mapped[str | None] = mapped_column(String(20))
+
+    # Workflow: who wrote it, when it was sent for review, who reviewed it and when.
+    created_by_user_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("user_account.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    submitted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reviewed_by_user_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("user_account.id", ondelete="SET NULL"), nullable=True
+    )
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    created_by = relationship("User", foreign_keys=[created_by_user_id])
+    reviewed_by = relationship("User", foreign_keys=[reviewed_by_user_id])
+    gallery = relationship(
+        "StoryMedia",
+        back_populates="story",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        order_by="StoryMedia.sort_order",
+    )
 
     cover_image = relationship("MediaAsset")
 

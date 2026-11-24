@@ -10,57 +10,73 @@ import {
 } from "@mui/material";
 import ArrowOutwardRounded from "@mui/icons-material/ArrowOutwardRounded";
 import LinkButton from "@/components/ui/LinkButton";
+import ImagePlaceholder, { type PhotoNeeded } from "@/components/ui/ImagePlaceholder";
 
 const MotionBox = motion(Box);
 
-const steps = [
+interface Step {
+    number: string;
+    title: string;
+    description: string;
+    /** Null while the requested photo is still being chosen (see `photo`). */
+    image: string | null;
+    alt: string;
+    /** CSS object-position, to keep the speaker in frame in the narrow cards. */
+    position?: string;
+    photo?: PhotoNeeded;
+}
+
+// Titles and descriptions: SOEA website feedback, 19 Nov 2026, §7 (the same six
+// stages as Our Approach). Photo order: same document, §2.1.
+
+const steps: Step[] = [
     {
         number: "01",
-        title: "Listen & understand",
-        description:
-            "Start with the lived experiences, priorities and aspirations of communities.",
-        image: "/assets/images/community/womanmicspeaking.jpg",
-        alt: "A woman speaking during a community engagement session",
+        title: "Understand the challenge",
+        description: "Listen to lived experience, community priorities and aspirations.",
+        image: "/assets/images/approach/nawire-speaking.jpg",
+        alt: "Nawire, in a green coat and an SOEA high-visibility vest, speaking into a microphone at a community event",
+        position: "50% 35%",
     },
     {
         number: "02",
         title: "Assess together",
-        description:
-            "Understand local challenges, resources and opportunities collaboratively.",
-        image: "/assets/images/community/datassessmentdandora.JPEG",
-        alt: "Community data assessment in Dandora",
+        description: "Gather baseline evidence, analyze opportunities and barriers, and validate findings with communities.",
+        image: "/assets/images/approach/nahshon-speaking.jpg",
+        alt: "Nahshon Omollo, in an SOEA shirt, facilitating a conversation with community members seated around a table",
+        position: "72% 40%",
     },
     {
         number: "03",
         title: "Co-design",
-        description:
-            "Shape practical responses with the people who will bring them to life.",
-        image: "/assets/images/community/VSORep.jpg",
-        alt: "Community and development representatives working together",
+        description: "Develop practical solutions, curriculum content and pathways with communities, technical partners and institutions.",
+        // Moved here from step 01, as requested.
+        image: "/assets/images/community/womanmicspeaking.jpg",
+        alt: "A woman speaking during a community engagement session",
     },
     {
         number: "04",
-        title: "Train & equip",
-        description:
-            "Build the skills, knowledge and capabilities needed to take action.",
-        image: "/assets/images/community/RozaliaSpeaking.jpg",
-        alt: "Rozalia speaking during a training session",
+        title: "Build capabilities",
+        description: "Deliver practical skills, legal rights advocacy, safety, social skills and enterprise learning.",
+        image: "/assets/images/approach/rozalia-speaking-mazingira-day.jpg",
+        alt: "Rozalia Wangui Karanja, wearing an SOEA shirt, speaking into a microphone to children and community members",
+        position: "35% 40%",
     },
     {
         number: "05",
         title: "Connect to opportunity",
-        description:
-            "Create pathways to partnerships, markets and sustainable livelihoods.",
-        image: "/assets/images/community/stephceciplanningaugust.JPEG",
-        alt: "Planning and collaboration session",
+        description: "Support demonstration, market linkages, financial services and sustainable livelihoods.",
+        // Moved here from step 06, as requested.
+        image: "/assets/images/community/stephaniesite.jpg",
+        alt: "SOEA team member during a project site visit",
     },
     {
         number: "06",
-        title: "Follow through",
-        description:
-            "Learn from implementation, track progress and strengthen what works.",
-        image: "/assets/images/community/stephaniesite.jpg",
-        alt: "SOEA team member during a project site visit",
+        title: "Measure, document, learn, replicate, scale & adopt",
+        description: "Follow up, assess change, communicate evidence, adapt what works and support lasting community or institutional ownership.",
+        image: "/assets/images/approach/brian-speaking.jpg",
+        alt: "Brian Kibugi, in an SOEA high-visibility vest, speaking into a microphone at a community event",
+        position: "35% 35%",
     },
 ];
 
@@ -215,7 +231,8 @@ export default function OurApproach() {
                                     },
                                 }}
                             >
-                                {/* Background photograph */}
+                                {/* Background photograph, or the photo still to be chosen */}
+                                {step.image ? (
                                 <Image
                                     src={step.image}
                                     alt={step.alt}
@@ -224,7 +241,7 @@ export default function OurApproach() {
                                     priority={index === 0}
                                     style={{
                                         objectFit: "cover",
-                                        objectPosition: "center",
+                                        objectPosition: step.position ?? "center",
                                         filter: isActive
                                             ? "brightness(0.88) saturate(1)"
                                             : "brightness(0.58) saturate(0.65) blur(1.2px)",
@@ -233,6 +250,13 @@ export default function OurApproach() {
                                             "filter 650ms ease, transform 900ms cubic-bezier(0.22, 1, 0.36, 1)",
                                     }}
                                 />
+                                ) : (
+                                    <ImagePlaceholder
+                                        {...step.photo!}
+                                        compact
+                                        sx={{ bottom: "auto", height: "58%", justifyContent: "flex-start", zIndex: 2 }}
+                                    />
+                                )}
 
                                 {/* Dark photographic overlay */}
                                 <Box

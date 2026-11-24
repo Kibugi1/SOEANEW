@@ -142,6 +142,8 @@ def test_campaign_email_includes_personal_unsubscribe_link(
         assert message["To"] == "reader@example.com"
         assert message["Subject"] == "SOEA November updates"
         assert "recipient-specific-token" in message["List-Unsubscribe"]
+        assert "/newsletter-subscriptions/one-click?token=" in message["List-Unsubscribe"]
+        assert message["List-Unsubscribe-Post"] == "List-Unsubscribe=One-Click"
 
         parts = list(message.walk())
         text_part = next(
@@ -199,3 +201,21 @@ def test_campaign_email_requires_unsubscribe_configuration(app):
                 body_html=None,
                 unsubscribe_token="signed-token",
             )
+
+
+def test_campaign_email_falls_back_to_page_link_without_api_url(app, monkeypatch):
+    with app.app_context():
+        configure_email(app)
+        app.config["NEWSLETTER_UNSUBSCRIBE_URL"] = "https://soea.example/unsubscribe"
+        app.config["API_PUBLIC_URL"] = None
+        fake_smtp = FakeSMTP("smtp.example.com", 587, 15)
+        monkeypatch.setattr(newsletter_email.smtplib, "SMTP", lambda host, port, timeout: fake_smtp)
+
+        newsletter_email.send_newsletter_campaign_email(
+            email="reader@example.com", subject="Hi", body_text="Body", body_html=None,
+            unsubscribe_token="tok",
+        )
+
+        message = fake_smtp.message
+        assert message["List-Unsubscribe"] == "<https://soea.example/unsubscribe?token=tok>"
+        assert message["List-Unsubscribe-Post"] is None

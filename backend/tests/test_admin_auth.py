@@ -191,8 +191,10 @@ def test_tampered_access_token_is_rejected(app, auth_client):
         create_user()
 
     token = login(auth_client).get_json()["data"]["access_token"]
+    # Change the signature (always the last segment; the payload may be compressed
+    # and then begins with an empty segment).
     parts = token.split(".")
-    parts[0] = ("A" if parts[0][0] != "A" else "B") + parts[0][1:]
+    parts[-1] = ("A" if parts[-1][0] != "A" else "B") + parts[-1][1:]
     tampered_token = ".".join(parts)
 
     response = auth_client.get(

@@ -45,12 +45,22 @@ def verify_newsletter_token_claims(
     purpose: str,
     max_age: int | None = None,
 ) -> dict:
-    """Verify a token and return its signed claims."""
+    """Verify a token and return its signed claims.
+
+    Confirmation links expire (NEWSLETTER_TOKEN_MAX_AGE, 24 hours). Unsubscribe links
+    must keep working for as long as someone might open an old newsletter, so they
+    use NEWSLETTER_UNSUBSCRIBE_TOKEN_MAX_AGE, which is None (never expires) by
+    default. They stay safe because they are signed and carry the subscriber's
+    nonce: subscribing again issues a new nonce and cancels every older link.
+    """
     if max_age is None:
-        max_age = current_app.config.get(
-            "NEWSLETTER_TOKEN_MAX_AGE",
-            60 * 60 * 24,
-        )
+        if purpose == "unsubscribe":
+            max_age = current_app.config.get("NEWSLETTER_UNSUBSCRIBE_TOKEN_MAX_AGE")
+        else:
+            max_age = current_app.config.get(
+                "NEWSLETTER_TOKEN_MAX_AGE",
+                60 * 60 * 24,
+            )
 
     payload = _serializer(purpose).loads(token, max_age=max_age)
 

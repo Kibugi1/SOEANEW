@@ -16,17 +16,18 @@ import ArrowForwardRounded from "@mui/icons-material/ArrowForwardRounded";
 import ArrowOutwardRounded from "@mui/icons-material/ArrowOutwardRounded";
 
 const photographs = [
-  {
-    src: "/assets/images/community/countyofficersmatharerozalia.JPEG",
-    alt: "Community and county-level engagement in Mathare",
-    title: "Working together",
-    category: "COMMUNITY ENGAGEMENT",
-  },
+  // Feedback 19 Nov 2026, §2.2: the photo of women and men (formerly second) comes first.
   {
     src: "/assets/images/community/datassessmentdandora.JPEG",
     alt: "Environmental data assessment in Dandora",
     title: "Understanding our communities",
     category: "FIELD ASSESSMENT",
+  },
+  {
+    src: "/assets/images/community/countyofficersmatharerozalia.JPEG",
+    alt: "Community and county-level engagement in Mathare",
+    title: "Working together",
+    category: "COMMUNITY ENGAGEMENT",
   },
   {
     src: "/assets/images/community/Blackwhitepic.jpg",
@@ -154,9 +155,13 @@ export default function PeopleIntroduction() {
                 lineHeight: 1.9,
               }}
             >
-              Square One Eco Africa brings communities, skills and practical
-              solutions together around environmental challenges and
-              sustainable livelihoods.
+              At SOEA, communities shape the solutions that affect their lives,
+              livelihoods and environments. We work alongside people in
+              underserved and climate-vulnerable settings, strengthening the
+              knowledge, practical skills, agency and opportunities they need to
+              lead change. Our measure of transformational impact is what
+              communities can sustain, improve and grow long after an
+              implementing organization&rsquo;s direct involvement ends.
             </Typography>
 
             <Box

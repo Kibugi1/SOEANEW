@@ -73,11 +73,13 @@ def test_list_items_expose_only_allowlisted_fields(client):
         "partner_type",
         "summary",
         "website_url",
+        "logo",
         "areas",
         "url",
     }
     assert item["url"] == "/partners/demo-partner"
     assert item["website_url"] is None
+    assert item["logo"] is None
     assert item["areas"] == []
 
 

@@ -21,7 +21,7 @@ import {
   taarifaLayers,
 } from "@/data/innovation";
 
-/** "Coming Soon" preview of TAARiFA Eco: concept summary, layers, adaptability. */
+/** "Coming Soon" preview of Taarifa Eco: concept summary, layers, adaptability. */
 export default function TaarifaPreview() {
   const [selectedId, setSelectedId] = useState(adaptableCommunities[0].id);
   const selected =
@@ -39,7 +39,7 @@ export default function TaarifaPreview() {
         <Grid container spacing={{ xs: 6, md: 10 }}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", flexWrap: "wrap", rowGap: 1 }}>
-              <SectionEyebrow>Eco-Tech Innovation Hubs</SectionEyebrow>
+              <SectionEyebrow>EcoTech Innovation Hubs</SectionEyebrow>
               <Chip label={taarifa.status} color="secondary" size="small" sx={{ fontWeight: 600 }} />
             </Stack>
             <Typography id="taarifa-heading" variant="h2" sx={{ mt: 3 }}>

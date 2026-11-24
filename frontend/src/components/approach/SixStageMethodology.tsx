@@ -9,12 +9,14 @@ import {
   Typography,
 } from "@mui/material";
 
+// Stage names and descriptions: SOEA website feedback, 19 Nov 2026, §7. This is how SOEA
+// works; it is kept separate from WP-LIFT's project phases (where a project stands).
 const stages = [
   {
     number: "01",
     title: "Understand the Challenge",
     description:
-      "We listen to communities, conduct assessments and document local experiences.",
+      "Listen to lived experience, community priorities and aspirations.",
     detail:
       "We begin by listening. Through community conversations, observation and assessments, we seek to understand the environmental challenges people face and how these affect their daily lives and livelihoods.",
     label: "Listen and understand",
@@ -23,7 +25,7 @@ const stages = [
     number: "02",
     title: "Assess Together",
     description:
-      "We identify needs, existing skills, opportunities, barriers and possible solutions.",
+      "Gather baseline evidence, analyze opportunities and barriers, and validate findings with communities.",
     detail:
       "Communities are active contributors to the assessment process. Together, we identify existing knowledge and skills, understand barriers, and explore opportunities that can inform practical interventions.",
     label: "Identify priorities",
@@ -32,7 +34,7 @@ const stages = [
     number: "03",
     title: "Co-Design",
     description:
-      "Communities, technical experts and partners develop practical solutions and learning pathways.",
+      "Develop practical solutions, curriculum content and pathways with communities, technical partners and institutions.",
     detail:
       "We bring community knowledge together with technical expertise and partner experience to shape solutions that are relevant, achievable and responsive to local realities.",
     label: "Develop solutions",
@@ -41,7 +43,7 @@ const stages = [
     number: "04",
     title: "Build Capabilities",
     description:
-      "We connect participants to training, mentorship, technical skills, legal awareness, financial literacy and occupational health and safety.",
+      "Deliver practical skills, legal rights advocacy, safety, social skills and enterprise learning.",
     detail:
       "We support people to develop the knowledge, confidence and practical skills they need. Learning may include technical training, mentorship, legal awareness, financial literacy and occupational health and safety.",
     label: "Develop practical skills",
@@ -50,18 +52,18 @@ const stages = [
     number: "05",
     title: "Connect to Opportunity",
     description:
-      "We facilitate access to practical experience, markets, financial services, enterprise pathways and partnerships.",
+      "Support demonstration, market linkages, financial services and sustainable livelihoods.",
     detail:
       "Skills become more valuable when they connect to opportunity. We work to strengthen pathways to practical experience, markets, financial services, enterprise development and relevant partnerships.",
     label: "Open opportunities",
   },
   {
     number: "06",
-    title: "Follow Through",
+    title: "Measure, Document, Learn, Replicate, Scale & Adopt",
     description:
-      "We track progress, document learning and assess outcomes, including through three-month and six-month follow-up where applicable.",
+      "Follow up, assess change, communicate evidence, adapt what works and support lasting community or institutional ownership.",
     detail:
-      "Our work does not end when training is complete. We document progress, learn from implementation and assess outcomes. Follow-up may take place at three and six months, where applicable.",
+      "Our work does not end when training is complete. We follow up, assess change and document what we learn, communicate the evidence, adapt what works, and support communities or institutions to take ownership so that solutions can be replicated, scaled and adopted.",
     label: "Measure and learn",
   },
 ];

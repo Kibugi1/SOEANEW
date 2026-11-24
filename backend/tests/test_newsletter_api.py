@@ -557,3 +557,65 @@ def test_newsletter_email_failure_error_includes_request_id(
     assert response.headers["X-Request-ID"]
     assert response.get_json()["error"]["code"] == "EMAIL_DELIVERY_FAILED"
     assert response.get_json()["error"]["request_id"] == response.headers["X-Request-ID"]
+
+
+def _status(app, email="reader@example.com"):
+    with app.app_context():
+        return db.session.query(Subscriber).filter_by(email=email).one().status
+
+
+def _unsubscribe_token(app, nonce, email="reader@example.com"):
+    with app.app_context():
+        return generate_newsletter_token(email, "unsubscribe", nonce)
+
+
+def test_unsubscribe_links_keep_working_after_confirmation_links_expire(newsletter_client, app):
+    nonce = create_subscriber(app, "reader@example.com", "active")
+    token = _unsubscribe_token(app, nonce)
+    app.config["NEWSLETTER_TOKEN_MAX_AGE"] = -1  # every confirmation link is now expired
+
+    response = newsletter_client.post("/api/v1/newsletter-subscriptions/unsubscribe", json={"token": token})
+
+    assert response.status_code == 200
+    assert _status(app) == "unsubscribed"
+
+
+def test_one_click_unsubscribe(newsletter_client, app):
+    nonce = create_subscriber(app, "reader@example.com", "active")
+    token = _unsubscribe_token(app, nonce)
+
+    response = newsletter_client.post(
+        f"/api/v1/newsletter-subscriptions/one-click?token={token}",
+        data={"List-Unsubscribe": "One-Click"},
+    )
+
+    assert response.status_code == 200
+    assert _status(app) == "unsubscribed"
+    # Repeating it is harmless.
+    again = newsletter_client.post(
+        f"/api/v1/newsletter-subscriptions/one-click?token={token}",
+        data={"List-Unsubscribe": "One-Click"},
+    )
+    assert again.status_code == 200
+
+
+def test_one_click_needs_post_with_the_one_click_body(newsletter_client, app):
+    nonce = create_subscriber(app, "reader@example.com", "active")
+    token = _unsubscribe_token(app, nonce)
+    url = f"/api/v1/newsletter-subscriptions/one-click?token={token}"
+
+    assert newsletter_client.get(url).status_code == 405  # link scanners only open (GET) links
+    assert newsletter_client.post(url).status_code == 400
+    assert newsletter_client.post(url, data={"List-Unsubscribe": "yes"}).status_code == 400
+    assert _status(app) == "active"
+
+
+def test_one_click_rejects_bad_or_missing_tokens(newsletter_client, app):
+    create_subscriber(app, "reader@example.com", "active")
+    body = {"List-Unsubscribe": "One-Click"}
+
+    assert newsletter_client.post("/api/v1/newsletter-subscriptions/one-click", data=body).status_code == 400
+    assert newsletter_client.post(
+        "/api/v1/newsletter-subscriptions/one-click?token=forged", data=body
+    ).status_code == 400
+    assert _status(app) == "active"

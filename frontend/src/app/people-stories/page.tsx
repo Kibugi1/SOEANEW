@@ -16,7 +16,8 @@ import {
   teamIntro,
   volunteers,
 } from "@/data/people";
-import { stories, storiesIntro } from "@/data/stories";
+import { storiesIntro } from "@/data/stories";
+import { getPublicStories } from "@/lib/content/stories";
 
 export const metadata: Metadata = {
   title: "People & Stories",
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
     "Meet the Board and volunteer team behind Square One Eco Africa, and follow the stories and evidence from our community programs.",
 };
 
-export default function PeopleStoriesPage() {
+export default async function PeopleStoriesPage() {
   return (
     <>
       <Navbar />
@@ -50,7 +51,7 @@ export default function PeopleStoriesPage() {
           eyebrow={storiesIntro.eyebrow}
           title={storiesIntro.title}
           intro="From community grounding in Dandora and Mathare to the first training curriculum, we document each step of the CECI journey."
-          stories={stories}
+          stories={(await getPublicStories()).slice(0, 3)}
         />
         <ConnectCTA {...connectCopy} />
       </main>

@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
@@ -72,10 +74,24 @@ export default function StoryTimeline({ stories, headingLevel = "h3" }: StoryTim
                 color={isCurrent ? "secondary" : "default"}
                 sx={{ height: 22, fontSize: "0.7rem" }}
               />
+              {story.kind === "event" && (
+                <Chip label="Event" size="small" variant="outlined" sx={{ height: 22, fontSize: "0.7rem" }} />
+              )}
             </Stack>
             <Typography component={headingLevel} variant="h4" sx={{ mt: 1.5, fontSize: { xs: "1.6rem", md: "2rem" } }}>
-              {story.title}
+              {story.href ? (
+                <Link href={story.href} style={{ color: "inherit", textDecoration: "none" }}>
+                  {story.title}
+                </Link>
+              ) : (
+                story.title
+              )}
             </Typography>
+            {story.cover && (
+              <Box sx={{ position: "relative", mt: 2, maxWidth: 560, aspectRatio: "16 / 9", bgcolor: "background.subtle" }}>
+                <Image src={story.cover.src} alt={story.cover.alt} fill sizes="(max-width: 600px) 90vw, 560px" style={{ objectFit: "cover" }} unoptimized />
+              </Box>
+            )}
             <Typography sx={{ mt: 1.5, maxWidth: "66ch", color: "text.secondary", lineHeight: 1.85 }}>
               {story.summary}
             </Typography>
@@ -89,6 +105,13 @@ export default function StoryTimeline({ stories, headingLevel = "h3" }: StoryTim
                 </Box>
                 {story.nextStep}
               </Typography>
+            )}
+            {story.href && (
+              <Box sx={{ mt: 2 }}>
+                <Link href={story.href} style={{ color: "#504624", fontWeight: 700, fontSize: "0.9rem" }}>
+                  {story.kind === "event" ? "Read about this event" : "Read the full story"} →
+                </Link>
+              </Box>
             )}
           </Box>
         );

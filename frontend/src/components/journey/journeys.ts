@@ -2,7 +2,8 @@
  * Journey definitions. Field lists follow docs/consolidated-guide.pdf:
  * - Partnership (§09): name; organization; email; phone (optional);
  *   partnership interest/category; relevant experience/resources; message;
- *   consent. Routes to the partnerships inbox.
+ *   consent. The API routes every message to its inbox (partnerships,
+ *   volunteers or info).
  * - Contact (§11): simple contact form with a clear privacy notice.
  * - Subscribe (§11): updates on community programs, research, partnerships
  *   and learning.
@@ -63,7 +64,6 @@ export const partnershipJourney: JourneyConfig = {
   id: "partnership",
   kind: "partnership",
   name: "Partnership journey",
-  inbox: () => "partnerships",
   steps: [
     {
       id: "organization",
@@ -118,7 +118,7 @@ export const partnershipJourney: JourneyConfig = {
       stage: "Anything else",
       title: "Is there anything else you'd like us to know?",
       body: "Timelines, ideas you'd like to test together, or questions for our team.",
-      fields: [{ name: "message", type: "textarea", label: "Message", optional: true, maxLength: 2000 }],
+      fields: [{ name: "message", type: "textarea", label: "Message", optional: true, minLength: 10, maxLength: 2000 }],
     },
   ],
   review: {
@@ -147,7 +147,6 @@ export const volunteerJourney: JourneyConfig = {
   id: "volunteer",
   kind: "volunteer",
   name: "Volunteer journey",
-  inbox: () => "info",
   steps: [
     {
       id: "name",
@@ -249,8 +248,6 @@ export const contactJourney: JourneyConfig = {
   id: "contact",
   kind: "contact",
   name: "Send a message",
-  inbox: (answers) =>
-    ["partnerships", "research", "institutional"].includes(String(answers.topic)) ? "partnerships" : "info",
   steps: [
     {
       id: "topic",
@@ -278,7 +275,7 @@ export const contactJourney: JourneyConfig = {
       id: "message",
       stage: "Your message",
       title: "What's on your mind?",
-      fields: [{ name: "message", type: "textarea", label: "Message", maxLength: 3000 }],
+      fields: [{ name: "message", type: "textarea", label: "Message", minLength: 10, maxLength: 3000 }],
     },
   ],
   review: {
@@ -302,14 +299,13 @@ export const subscribeTopics: JourneyOption[] = [
   { value: "research", label: "Research & evidence" },
   { value: "partnerships", label: "Partnerships" },
   { value: "learning", label: "Learning resources" },
-  { value: "taarifa-eco", label: "TAARiFA Eco", description: "Be first to hear when the prototype is introduced." },
+  { value: "taarifa-eco", label: "Taarifa Eco", description: "Be first to hear when the prototype is introduced." },
 ];
 
 export const subscribeJourney: JourneyConfig = {
   id: "subscribe",
   kind: "subscription",
   name: "Stay connected",
-  inbox: () => "info",
   steps: [
     {
       id: "topics",
@@ -335,9 +331,12 @@ export const subscribeJourney: JourneyConfig = {
     submitLabel: "Subscribe",
   },
   success: {
-    title: (answers) => (firstName(answers) ? `You're in, ${firstName(answers)}!` : "You're in!"),
-    body: "Thank you for following our journey. Updates will arrive in your inbox.",
-    nextSteps: ["We'll email you when there's news on the topics you chose."],
+    title: (answers) => (firstName(answers) ? `Almost there, ${firstName(answers)}!` : "Almost there!"),
+    body: "Thank you for following our journey. We've sent you an email: open it and confirm your subscription.",
+    nextSteps: [
+      "Confirm your subscription using the link in our email. Check your spam folder if it hasn't arrived.",
+      "We'll then email you when there's news from SOEA.",
+    ],
     links: [
       { label: "Follow our stories", href: "/people-stories/stories" },
       { label: "Back to home", href: "/" },

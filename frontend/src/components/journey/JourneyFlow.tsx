@@ -16,7 +16,7 @@ import EastRoundedIcon from "@mui/icons-material/EastRounded";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import JourneyField from "@/components/journey/JourneyField";
 import { resolve, type Answers, type JourneyConfig, type JourneyField as Field } from "@/components/journey/types";
-import { createSubmission, type AnswerValue, type Submission } from "@/lib/submissions";
+import { createSubmission, submissionErrorMessage, type AnswerValue, type Submission } from "@/lib/submissions";
 
 /** Submissions faster than this are treated as automated (anti-spam). */
 const MIN_HUMAN_MS = 4000;
@@ -38,6 +38,9 @@ function validateField(field: Field, value: AnswerValue | undefined): string | u
   }
   if (field.type === "email" && typeof value === "string" && !EMAIL_PATTERN.test(value.trim())) {
     return "That email address doesn't look quite right.";
+  }
+  if (field.minLength && typeof value === "string" && value.trim().length < field.minLength) {
+    return `Please write at least ${field.minLength} characters.`;
   }
   if (field.type === "tel" && typeof value === "string" && !PHONE_PATTERN.test(value.trim())) {
     return "Use digits, spaces and an optional + country code.";
@@ -150,18 +153,17 @@ export default function JourneyFlow({ config, initialAnswers = {} }: JourneyFlow
     try {
       const saved = looksAutomated
         ? // Bots get the normal thank-you screen but nothing is stored.
-          ({ reference: "SOEA-RECEIVED" } as Submission)
+          ({ reference: null } as Submission)
         : await createSubmission({
             kind: config.kind,
-            inbox: config.inbox(answers),
-            answers: { ...answers, consent: true },
+            answers,
             source: window.location.pathname,
           });
       setHasMoved(true);
       setDirection(1);
       setSubmission(saved);
-    } catch {
-      setSubmitError("Something went wrong while sending. Please try again.");
+    } catch (error) {
+      setSubmitError(submissionErrorMessage(error));
     } finally {
       setSubmitting(false);
     }
@@ -326,12 +328,14 @@ export default function JourneyFlow({ config, initialAnswers = {} }: JourneyFlow
                   <Typography variant="lead" sx={{ mt: 3, color: "text.secondary" }}>
                     {resolve(config.success.body, answers)}
                   </Typography>
-                  <Typography sx={{ mt: 3, fontSize: "0.85rem" }}>
-                    Your reference:{" "}
-                    <Box component="span" sx={{ fontFamily: "monospace", fontWeight: 700 }}>
-                      {submission.reference}
-                    </Box>
-                  </Typography>
+                  {submission.reference && (
+                    <Typography sx={{ mt: 3, fontSize: "0.85rem" }}>
+                      Your reference:{" "}
+                      <Box component="span" sx={{ fontFamily: "monospace", fontWeight: 700 }}>
+                        {submission.reference}
+                      </Box>
+                    </Typography>
+                  )}
                   <Typography variant="eyebrow" component="h3" sx={{ mt: 5, mb: 2, color: "primary.dark" }}>
                     What happens next
                   </Typography>
@@ -411,6 +415,18 @@ export default function JourneyFlow({ config, initialAnswers = {} }: JourneyFlow
                     }
                     label={<Typography sx={{ fontSize: "0.9rem", lineHeight: 1.6 }}>{config.review.consentLabel}</Typography>}
                   />
+                  <Typography sx={{ mt: 1, ml: 4, fontSize: "0.82rem", lineHeight: 1.6, color: "text.secondary" }}>
+                    Read how we handle your details in our{" "}
+                    <Box
+                      component={Link}
+                      href="/privacy"
+                      target="_blank"
+                      sx={{ color: "primary.dark", fontWeight: 600, textDecoration: "underline" }}
+                    >
+                      privacy notice
+                    </Box>
+                    {" "}(opens in a new tab, so you won&rsquo;t lose your answers).
+                  </Typography>
                   {consentError && (
                     <Typography role="alert" sx={{ mt: 1, color: "error.main", fontSize: "0.85rem" }}>
                       Please confirm you agree before sending.

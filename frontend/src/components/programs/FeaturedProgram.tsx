@@ -30,7 +30,7 @@ export default function FeaturedProgram({ programme }: Props) {
                 color: "#83834B",
               }}
             >
-              Featured programme / {programme.shortName}
+              Flagship program / {programme.shortName}
             </Typography>
 
             <Typography
@@ -88,7 +88,7 @@ export default function FeaturedProgram({ programme }: Props) {
                 "&:hover": { bgcolor: "#504624" },
               }}
             >
-              Explore the programme
+              Explore CECI and its projects
             </Button>
           </Stack>
 
@@ -102,7 +102,7 @@ export default function FeaturedProgram({ programme }: Props) {
           >
             <Image
               src={programme.coverImage}
-              alt="SOEA community programme planning session"
+              alt="SOEA community program planning session"
               fill
               priority
               sizes="(max-width: 900px) 100vw, 55vw"

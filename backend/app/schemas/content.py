@@ -3,9 +3,9 @@ from marshmallow import Schema, fields, validate
 
 from app.models import LOCATION_TYPES
 
-from .common import PaginationQuerySchema
+from .common import PaginationQuerySchema, public_image, safe_http_or_path
 from .refs import location_ref, program_ref, published, theme_ref
-from .urls import LOCATION_URL_PREFIX, PROGRAM_URL_PREFIX, THEME_URL_PREFIX
+from .urls import LOCATION_URL_PREFIX, PROGRAM_URL_PREFIX, TEAM_URL_PREFIX, THEME_URL_PREFIX
 
 
 def _published_parent(location):
@@ -71,6 +71,45 @@ class PhaseSchema(Schema):
     status = fields.String()
 
 
+def _published_parent_program(program):
+    parent = program.parent
+    if parent is not None and parent.publication_status == "published":
+        return program_ref(parent)
+    return None
+
+
+def _program_lead(program):
+    """The lead's public card, only while their profile is published."""
+    lead = program.lead
+    if lead is None or lead.status != "published":
+        return None
+    return {
+        "slug": lead.slug,
+        "display_name": lead.display_name,
+        "role_title": lead.role_title,
+        "image": public_image(lead.image, fallback_alt=lead.display_name),
+        "url": f"{TEAM_URL_PREFIX}/{lead.slug}",
+    }
+
+
+def _program_partners(program):
+    """Published partners on this program, in their list order, with logos."""
+    from .partner import PartnerListSchema
+
+    partners = sorted(
+        (p for p in program.partners if p.publication_status == "published"),
+        key=lambda p: (p.sort_order, p.name),
+    )
+    return PartnerListSchema(many=True).dump(partners)
+
+
+def _program_cta(program):
+    if not program.cta_label:
+        return None
+    url = None if program.cta_pending else safe_http_or_path(program.cta_url)
+    return {"label": program.cta_label, "url": url, "pending": bool(program.cta_pending or not url)}
+
+
 class ProgramListSchema(Schema):
     id = fields.UUID()
     slug = fields.String()
@@ -82,12 +121,21 @@ class ProgramListSchema(Schema):
     themes = fields.Function(lambda program: [theme_ref(t) for t in published(program.themes)])
     locations = fields.Function(lambda program: [location_ref(l) for l in published(program.locations)])
     url = fields.Function(lambda program: f"{PROGRAM_URL_PREFIX}/{program.slug}")
+    parent = fields.Function(_published_parent_program)
+    cover_image = fields.Function(lambda program: public_image(program.cover_image, fallback_alt=program.title))
 
 
 class ProgramDetailSchema(ProgramListSchema):
     body = fields.String(allow_none=True)
     start_date = fields.Date(allow_none=True)
     end_date = fields.Date(allow_none=True)
+    lead = fields.Function(_program_lead)
+    contact_email = fields.String(allow_none=True)
+    cta = fields.Function(_program_cta)
+    sub_programs = fields.Function(
+        lambda program: [program_ref(child) for child in published(program.children)]
+    )
+    partners = fields.Function(_program_partners)
 
 
 # ---------- query-string schemas ----------

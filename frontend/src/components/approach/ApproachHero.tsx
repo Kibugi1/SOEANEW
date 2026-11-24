@@ -144,16 +144,14 @@ export default function ApproachHero() {
               overflow: "hidden",
             }}
           >
+            {/* Same photo as step 02 "Assess Together" in the Champions Journey. */}
             <Image
-              src="/assets/images/community/rozaliaconferencepresenting.webp"
-              alt="Community engagement and knowledge sharing during SOEA activities"
+              src="/assets/images/championsjourney/assesstogether.jpeg"
+              alt="Community members and SOEA staff sit in a circle with worksheets, discussing priorities together."
               fill
               priority
               sizes="(max-width: 900px) 100vw, 50vw"
-              style={{
-                objectFit: "cover",
-                objectPosition: "center",
-              }}
+              style={{ objectFit: "cover", objectPosition: "center" }}
             />
 
             <Box

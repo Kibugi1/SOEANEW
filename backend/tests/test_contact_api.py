@@ -97,7 +97,8 @@ def test_contact_enquiry_does_not_expose_private_fields(contact_client):
 
     body = response.get_json()["data"]
 
-    assert set(body) == {"id", "message"}
+    # The reference is for the sender to quote in follow-ups; nothing else is echoed.
+    assert set(body) == {"id", "reference", "message"}
     assert "email" not in body
     assert "consent" not in body
     assert "status" not in body

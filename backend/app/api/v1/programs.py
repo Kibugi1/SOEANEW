@@ -37,7 +37,9 @@ from . import api_v1
 def list_programs():
     args = ProgramListQuerySchema().load(request.args.to_dict())
 
-    statement = public_programs().options(selectinload(Program.themes), selectinload(Program.locations))
+    statement = public_programs().options(
+        selectinload(Program.themes), selectinload(Program.locations), selectinload(Program.cover_image),
+    )
     if "featured" in args:
         statement = statement.where(Program.is_featured.is_(args["featured"]))
     if args.get("theme"):
