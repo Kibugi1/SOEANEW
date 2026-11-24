@@ -12,6 +12,8 @@ import "./globals.css";
 import ThemeRegistry from "@/components/providers/ThemeRegistry";
 
 export const metadata: Metadata = {
+  // Makes share images and links absolute (WhatsApp, LinkedIn and others need full URLs).
+  metadataBase: new URL("https://sq1ecoafrica.org"),
   title: {
     default: "Square One Eco Africa | Practical Climate Solutions",
     template: "%s | Square One Eco Africa",
