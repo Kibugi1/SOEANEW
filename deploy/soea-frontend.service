@@ -1,4 +1,5 @@
 # /etc/systemd/system/soea-frontend.service
+# frontend-current points at the latest build under /srv/soeaweb/releases (deploy.sh).
 [Unit]
 Description=SOEA website (Next.js)
 After=network.target soea-backend.service
@@ -6,7 +7,7 @@ After=network.target soea-backend.service
 [Service]
 User=soeaweb
 Group=soeaweb
-WorkingDirectory=/srv/soeaweb/SOEANEW/frontend
+WorkingDirectory=/srv/soeaweb/frontend-current
 EnvironmentFile=/srv/soeaweb/frontend.env
 Environment=NODE_ENV=production
 ExecStart=/usr/bin/node node_modules/next/dist/bin/next start --port 3020 --hostname 127.0.0.1
