@@ -1,12 +1,9 @@
-import type { PhotoNeeded } from "@/components/ui/ImagePlaceholder";
-
 export interface CommunityLocation {
   id: string;
   name: string;
   description: string;
-  /** Null while the requested photo is chosen (feedback 19 Nov 2026, §10); see `photo`. */
-  image: string | null;
-  photo?: PhotoNeeded;
+  /** A photo, or a short muted looping video clip when `video` is set. */
+  media: { src: string; alt: string; video?: boolean };
   programmeSlug?: string;
   activityStatus: "programme_location" | "geographic_focus";
 }
@@ -25,11 +22,8 @@ export const whereWeWorkContent = {
     label: "Coordination Hub & Urban Programs",
     description:
       "Nairobi is SOEA's coordination hub and the starting point for community-based urban programming. In Dandora and Mathare, WP-LIFT, the first flagship project under the Community Environmental Champions Initiative (CECI), is already underway, working with waste pickers on safer work, practical skills, resource recovery and livelihoods.",
-    image: null as string | null,
-    photo: {
-      needed: "A licensed Nairobi skyline image: well framed, not cropped, and not a community engagement photo.",
-      source: "Licensed stock photo (not in the shared folders); confirm the license before use",
-    } satisfies PhotoNeeded,
+    image: "/assets/images/where-we-work/nairobi.jpg",
+    imageAlt: "Aerial view of the Nairobi city skyline",
   },
 
   communityLocations: [
@@ -38,10 +32,9 @@ export const whereWeWorkContent = {
       name: "Dandora",
       description:
         "Community grounding, waste-picker engagement, resource recovery, skills development and sustainable livelihood opportunities through WP-LIFT.",
-      image: null,
-      photo: {
-        needed: "Dandora community discussion at Light Academy Hall: people taking part and listening.",
-        source: "Dandora second community engagement photos",
+      media: {
+        src: "/assets/images/where-we-work/dandoraplanning.JPEG",
+        alt: "SOEA team members filling in a registration sheet as Dandora community members look on during a planning session",
       },
       programmeSlug: "ceci",
       activityStatus: "programme_location",
@@ -51,10 +44,10 @@ export const whereWeWorkContent = {
       name: "Mathare",
       description:
         "Community engagement, environmental assessments and collaborative learning, including work in Mabatini and Mlango Kubwa, through WP-LIFT.",
-      image: null,
-      photo: {
-        needed: "Mathare listening and analysis sessions: community members discussing findings.",
-        source: "Mathare baseline/community meetings folder",
+      media: {
+        src: "/assets/images/where-we-work/mathareplanning.MOV",
+        alt: "Video clip of a community planning session in Mathare",
+        video: true,
       },
       programmeSlug: "ceci",
       activityStatus: "programme_location",

@@ -1,5 +1,4 @@
 import Image from "next/image";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import GeoJourney from "@/components/where-we-work/GeoJourney";
 import { focusCounties } from "@/data/counties";
 import { getJourneyMapData } from "@/lib/geo/journeyMap";
@@ -170,17 +169,13 @@ export default function WhereWeWorkPage() {
                 bgcolor: "#E8E8DC",
               }}
             >
-              {content.coordinationHub.image ? (
-                <Image
-                  src={content.coordinationHub.image}
-                  alt="Nairobi skyline"
-                  fill
-                  sizes="(max-width: 900px) 100vw, 50vw"
-                  style={{ objectFit: "cover" }}
-                />
-              ) : (
-                <ImagePlaceholder {...content.coordinationHub.photo} sx={{ bottom: "30%" }} />
-              )}
+              <Image
+                src={content.coordinationHub.image}
+                alt={content.coordinationHub.imageAlt}
+                fill
+                sizes="(max-width: 900px) 100vw, 50vw"
+                style={{ objectFit: "cover" }}
+              />
               <Box
                 sx={{
                   position: "absolute",
@@ -303,16 +298,28 @@ export default function WhereWeWorkPage() {
                     bgcolor: "#F3F3EC",
                   }}
                 >
-                  {location.image ? (
+                  {location.media.video ? (
+                    <Box
+                      component="video"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      aria-label={location.media.alt}
+                      sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                    >
+                      {/* H.264 QuickTime file; served as MP4 so Chrome and Firefox will play it. */}
+                      <source src={location.media.src} type="video/mp4" />
+                    </Box>
+                  ) : (
                     <Image
-                      src={location.image}
-                      alt={`Community engagement in ${location.name}`}
+                      src={location.media.src}
+                      alt={location.media.alt}
                       fill
                       sizes="(max-width: 900px) 100vw, 50vw"
                       style={{ objectFit: "cover" }}
                     />
-                  ) : (
-                    location.photo && <ImagePlaceholder {...location.photo} sx={{ bottom: "35%" }} />
                   )}
                   <Box
                     sx={{
