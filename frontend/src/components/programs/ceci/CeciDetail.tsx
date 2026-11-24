@@ -4,7 +4,6 @@ import ArrowOutwardRounded from "@mui/icons-material/ArrowOutwardRounded";
 import MailOutlineRounded from "@mui/icons-material/MailOutlineRounded";
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
 
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import {
   JourneyState,
   ProjectLead,
@@ -213,8 +212,14 @@ export default function CeciDetail() {
       <Box component="section" sx={{ py: { xs: 9, md: 12 } }}>
         <Container maxWidth="xl">
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1.1fr 0.9fr" }, gap: { xs: 4, md: 8 }, alignItems: "center" }}>
-            <Box sx={{ position: "relative", minHeight: { xs: 280, md: 420 } }}>
-              <ImagePlaceholder {...groundUpStory.photo} />
+            <Box sx={{ position: "relative", minHeight: { xs: 280, md: 420 }, overflow: "hidden", bgcolor: "#F3F3EC" }}>
+              <Image
+                src={groundUpStory.photo.src}
+                alt={groundUpStory.photo.alt}
+                fill
+                sizes="(max-width: 900px) 100vw, 55vw"
+                style={{ objectFit: "cover" }}
+              />
             </Box>
             <Stack spacing={2.5}>
               <Eyebrow>{groundUpStory.eyebrow}</Eyebrow>
@@ -278,8 +283,14 @@ export default function CeciDetail() {
                   <Typography sx={{ color: muted, lineHeight: 1.8 }}>{step.description}</Typography>
                 </Box>
                 {step.photo ? (
-                  <Box sx={{ position: "relative", minHeight: 200 }}>
-                    <ImagePlaceholder {...step.photo} compact />
+                  <Box sx={{ position: "relative", minHeight: 200, overflow: "hidden", bgcolor: "#F3F3EC" }}>
+                    <Image
+                      src={step.photo.src}
+                      alt={step.photo.alt}
+                      fill
+                      sizes="(max-width: 900px) 100vw, 35vw"
+                      style={{ objectFit: "cover" }}
+                    />
                   </Box>
                 ) : (
                   <Box />
@@ -306,8 +317,14 @@ export default function CeciDetail() {
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }, gap: 3 }}>
             {ceciPathways.map((pathway) => (
               <Box key={pathway.number}>
-                <Box sx={{ position: "relative", height: { xs: 230, md: 260 }, bgcolor: "#F3F3EC" }}>
-                  <ImagePlaceholder {...pathway.photo} compact />
+                <Box sx={{ position: "relative", height: { xs: 230, md: 260 }, overflow: "hidden", bgcolor: "#F3F3EC" }}>
+                  <Image
+                    src={pathway.photo.src}
+                    alt={pathway.photo.alt}
+                    fill
+                    sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    style={{ objectFit: "cover" }}
+                  />
                 </Box>
                 <Typography sx={{ fontFamily: '"Space Mono", monospace', fontSize: 12, color: olive, mt: 3, mb: 1 }}>
                   PATHWAY {pathway.number}

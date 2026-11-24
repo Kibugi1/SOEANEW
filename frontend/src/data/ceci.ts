@@ -9,7 +9,6 @@
  * `photo` marks a slot where the team still has to choose a picture from the shared
  * folders; the page shows a labelled placeholder until it is replaced.
  */
-import type { PhotoNeeded } from "@/components/ui/ImagePlaceholder";
 
 export const ceciProgramme = {
   name: "Community Environmental Champions Initiative",
@@ -74,9 +73,9 @@ export const groundUpStory = {
     "How WP-LIFT began: listening to waste pickers in Dandora and Mathare, gathering baseline evidence, presenting findings to Nairobi City County, and coming together for the first Waste Pickers Super Day.",
   href: "/people-stories/stories",
   photo: {
-    needed: "A strong action photo from the CECI journey: listening sessions, presenting findings, or the Super Day (people interacting, SOEA branding visible).",
-    source: "CECI “From the Ground Up” / video editing shared folder",
-  } satisfies PhotoNeeded,
+    src: "/assets/images/programs/ceci/cecicollage.webp",
+    alt: "Collage of the CECI journey: waste pickers sorting waste, listening and registration sessions, the segregation challenge and the Waste Pickers Super Day group photo",
+  },
 };
 
 export type JourneyState = "completed" | "underway" | "upcoming" | "planned";
@@ -88,7 +87,7 @@ export interface JourneyStep {
   state: JourneyState;
   title: string;
   description: string;
-  photo?: PhotoNeeded;
+  photo?: { src: string; alt: string };
 }
 
 /** WP-LIFT journey and phases (§8.4 and the project-stage table). */
@@ -102,8 +101,8 @@ export const wpLiftJourney: JourneyStep[] = [
     description:
       "Engagement and baseline assessment in Dandora and Mathare, survey and community sampling, analysis of responses, and presentation and discussion of the findings with stakeholders including Nairobi City County Government. Design priorities identified.",
     photo: {
-      needed: "Original field and listening photos from the Dandora and Mathare baseline assessment.",
-      source: "Mathare baseline/community meetings and community baseline assessment folders",
+      src: "/assets/images/programs/ceci/cecicollage.webp",
+      alt: "Field and listening photos from the Dandora and Mathare baseline assessment",
     },
   },
   {
@@ -115,8 +114,8 @@ export const wpLiftJourney: JourneyStep[] = [
     description:
       "The inaugural Waste Pickers Super Day at Dandora Community Park brought together more than 80 waste pickers for games, group activities, a segregation challenge and community dialogue. Planned as an annual event every 10 October, subject to planning.",
     photo: {
-      needed: "Super Day collage: playing games, group activities, the segregation challenge, community dialogue, outreach and branded facilitation.",
-      source: "Waste Pickers Super Day photo folder (10 October 2026)",
+      src: "/assets/images/programs/ceci/cecibanner.jpg",
+      alt: "Waste pickers and SOEA facilitators celebrating in front of the Waste Pickers Super Day 2026 banner at Dandora",
     },
   },
   {
@@ -170,10 +169,10 @@ export interface Pathway {
   number: string;
   title: string;
   description: string;
-  photo: PhotoNeeded;
+  photo: { src: string; alt: string };
 }
 
-const PATHWAY_PHOTO_SOURCE = "Waste Pickers Super Day, Dandora/Mathare engagement and CECI shared folders";
+const PATHWAY_IMG = "/assets/images/programs/ceci";
 
 /** Five specialized pathways (§8.5). */
 export const ceciPathways: Pathway[] = [
@@ -182,35 +181,35 @@ export const ceciPathways: Pathway[] = [
     title: "Organic Waste & Composting",
     description:
       "Explore safe organic waste separation, composting and value creation through soil-improving products and related circular enterprises.",
-    photo: { needed: "Organic waste separation or composting in practice, with safe handling.", source: PATHWAY_PHOTO_SOURCE },
+    photo: { src: `${PATHWAY_IMG}/organicwastepathway01.jpg`, alt: "Waste pickers in gumboots separating mixed waste by hand" },
   },
   {
     number: "02",
     title: "Plastic Recycling & Upcycling",
     description:
       "Build skills in sorting, grading, safe recovery, processing and product innovation, alongside practical market and buyer connections.",
-    photo: { needed: "People sorting or grading recovered plastics, wearing protective gear.", source: PATHWAY_PHOTO_SOURCE },
+    photo: { src: "/assets/images/championsjourney/connecttoopportunity.jpg", alt: "A sack of recovered plastic containers collected for recycling" },
   },
   {
     number: "03",
     title: "Glass Recovery & Cutting",
     description:
       "Develop safe glass handling, cutting and reuse skills, considering protective equipment, product quality and appropriate markets.",
-    photo: { needed: "Glass recovery or a glass-cutting demonstration, with protective equipment visible.", source: PATHWAY_PHOTO_SOURCE },
+    photo: { src: `${PATHWAY_IMG}/glassprocessing.png`, alt: "Recovered glass bottles and broken glass gathered for processing" },
   },
   {
     number: "04",
     title: "E-Waste Management",
     description:
       "Strengthen awareness of safe collection, sorting, handling and referral to appropriate licensed recyclers, protecting people and the environment while exploring viable livelihood opportunities.",
-    photo: { needed: "Safe collection or sorting of electronic waste.", source: PATHWAY_PHOTO_SOURCE },
+    photo: { src: `${PATHWAY_IMG}/electronicwastesorting.png`, alt: "Discarded circuit boards and electronic casings piled for sorting" },
   },
   {
     number: "05",
     title: "Textile Recovery & Upcycling",
     description:
       "Work with recovered fabrics and garments to build practical repair, redesign, reuse and product-development skills connected to market demand.",
-    photo: { needed: "Recovered fabrics or garments being repaired, redesigned or upcycled.", source: PATHWAY_PHOTO_SOURCE },
+    photo: { src: `${PATHWAY_IMG}/textilerecovery.png`, alt: "A large heap of discarded clothing and fabrics awaiting recovery" },
   },
 ];
 
