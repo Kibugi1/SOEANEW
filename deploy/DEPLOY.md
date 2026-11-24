@@ -49,6 +49,15 @@ sudo systemctl enable --now redis-server
 redis-cli ping            # PONG
 ```
 
+The website build needs about 1.5 GB of memory. If `swapon --show` prints nothing,
+add 2 GB of swap so a build can never run the VPS out of memory (BiYo shares it):
+
+```bash
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile
+sudo mkswap /swapfile && sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
+
 Ubuntu's Redis only listens on 127.0.0.1 by default. Keep it that way.
 
 ## 3. User, database and code
@@ -158,8 +167,8 @@ curl -sI http://127.0.0.1:3020 | head -1      # HTTP/1.1 200 OK
 ## 8. nginx and HTTPS for api. and new.
 
 ```bash
-sudo cp /srv/soeaweb/SOEANEW/deploy/nginx-soea.conf /etc/nginx/sites-available/soea
-sudo ln -s /etc/nginx/sites-available/soea /etc/nginx/sites-enabled/
+sudo cp /srv/soeaweb/SOEANEW/deploy/nginx-soea.conf /etc/nginx/sites-available/soeaweb
+sudo ln -s /etc/nginx/sites-available/soeaweb /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 sudo certbot --nginx -d api.sq1ecoafrica.org -d new.sq1ecoafrica.org
 ```
@@ -178,14 +187,14 @@ BiYo down.
 
 ## 9. Switch sq1ecoafrica.org to the new site
 
-1. Find the old site's nginx file and keep a copy:
+1. The old site's nginx file is `/etc/nginx/sites-available/soea` (the new one is
+   `soeaweb`). Keep a copy:
    ```bash
-   grep -l "sq1ecoafrica.org" /etc/nginx/sites-enabled/*
-   sudo cp /etc/nginx/sites-available/OLD_FILE /srv/soeaweb/old-site-nginx.conf.bak
+   sudo cp /etc/nginx/sites-available/soea /srv/soeaweb/old-site-nginx.conf.bak
    ```
 2. In the old file, remove `sq1ecoafrica.org` and `www.sq1ecoafrica.org` from its
    `server_name` lines. Leave the file otherwise as it is, so you can switch back.
-3. In `/etc/nginx/sites-available/soea`, change the website block's
+3. In `/etc/nginx/sites-available/soeaweb`, change the website block's
    `server_name new.sq1ecoafrica.org;` to
    `server_name sq1ecoafrica.org www.sq1ecoafrica.org new.sq1ecoafrica.org;`
 4. Apply it and get the certificate:
