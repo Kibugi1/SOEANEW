@@ -228,7 +228,7 @@ that only lives on the server is lost along with the server.
 To let `deploy.sh` restart the services (once):
 
 ```bash
-echo 'soeaweb ALL=(root) NOPASSWD: /bin/systemctl restart soea-backend, /bin/systemctl restart soea-frontend' | sudo tee /etc/sudoers.d/soeaweb
+echo 'soeaweb ALL=(root) NOPASSWD: /usr/bin/systemctl restart soea-backend, /usr/bin/systemctl restart soea-frontend' | sudo tee /etc/sudoers.d/soeaweb
 ```
 
 **Every update after that:** push to `main`, then on the VPS:
