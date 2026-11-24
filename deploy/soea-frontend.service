@@ -1,0 +1,17 @@
+# /etc/systemd/system/soea-frontend.service
+[Unit]
+Description=SOEA website (Next.js)
+After=network.target soea-backend.service
+
+[Service]
+User=soeaweb
+Group=soeaweb
+WorkingDirectory=/srv/soeaweb/SOEANEW/frontend
+EnvironmentFile=/srv/soeaweb/frontend.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start --port 3020 --hostname 127.0.0.1
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

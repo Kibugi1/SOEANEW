@@ -62,6 +62,17 @@ def _get_smtp_port() -> int:
     return port
 
 
+def _get_proxy_count() -> int:
+    raw = os.getenv("PROXY_COUNT", "0").strip() or "0"
+    try:
+        count = int(raw)
+    except ValueError:
+        raise RuntimeError("PROXY_COUNT must be a whole number (0 or 1 for one nginx).") from None
+    if not 0 <= count <= 5:
+        raise RuntimeError("PROXY_COUNT must be between 0 and 5.")
+    return count
+
+
 class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CORS_ORIGINS = _split_csv(os.getenv("CORS_ORIGINS", "http://localhost:3000"))
@@ -84,6 +95,11 @@ class BaseConfig:
     # other mail apps POST to (RFC 8058). Must be https in production.
     API_PUBLIC_URL = os.getenv("API_PUBLIC_URL", "http://localhost:5000/api/v1")
     RATELIMIT_STORAGE_URI = os.getenv("RATELIMIT_STORAGE_URI", "memory://")
+    # How many reverse proxies (e.g. nginx) sit in front of the app. Set to 1 behind
+    # nginx so request.remote_addr, and so the per-visitor rate limits, use the real
+    # visitor's address instead of 127.0.0.1. Leave 0 when nothing proxies the app,
+    # or visitors could fake their address with an X-Forwarded-For header.
+    PROXY_COUNT = 0  # read from the environment in get_config()
 
     # Where website messages are announced by email. Every message is stored in the
     # admin inbox whether or not these are set; an empty value skips the email.
@@ -144,6 +160,7 @@ def get_config(name: str | None = None):
     # cannot mutate configuration returned by earlier calls.
     config = type(f"{name.title()}ConfigInstance", (config_class,), {})
     config.SMTP_PORT = _get_smtp_port()
+    config.PROXY_COUNT = _get_proxy_count()
 
     if name == "development":
         database_url = os.getenv("DATABASE_URL")
